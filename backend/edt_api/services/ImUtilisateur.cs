@@ -11,7 +11,7 @@ public class IMResponsable : IResponsable
 {
     private readonly AppDbContext _db;
     private readonly IMapper _mapper;
-
+    
     public IMResponsable(AppDbContext db, IMapper mapper)
     {
         _db = db;

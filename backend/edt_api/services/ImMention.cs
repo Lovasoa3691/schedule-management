@@ -1,6 +1,6 @@
 namespace edt_api.services;
 
-public interface IMention
+public class ImMention
 {
     
 }
