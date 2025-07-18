@@ -14,7 +14,13 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // builder.Services.AddOpenApi();
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddScoped<IResponsable, IMResponsable>();
+builder.Services.AddScoped<IUtilisateur, ImUtilisateur>();
+builder.Services.AddScoped<IMention, ImMention>();
+builder.Services.AddScoped<INiveau, IMNiveau>();
+builder.Services.AddScoped<IMatiere, ImMatiere>();
+builder.Services.AddScoped<ISalle, IMSalle>();
+builder.Services.AddScoped<IDisponibilite, ImDisponibilite>();
+builder.Services.AddScoped<IEdt, ImEdt>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

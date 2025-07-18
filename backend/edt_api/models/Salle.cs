@@ -11,6 +11,7 @@ public class Salle
     public string nomSalle { get; set; } = string.Empty;
     public int capacite {get; set;}
     public string typeSalle { get; set; } = string.Empty;
+    public string localisation { get; set; } = string.Empty;
     
     public ICollection<Edt> edts { get; set; } = new List<Edt>();
 }

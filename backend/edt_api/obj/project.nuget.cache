@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "ajohy3YuE7A=",
+  "dgSpecHash": "H0zBHEDFGS0=",
   "success": true,
-  "projectFilePath": "/home/juliannot/RiderProject/edt_api/edt_api/edt_api.csproj",
+  "projectFilePath": "/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/edt_api.csproj",
   "expectedPackageFiles": [
     "/home/juliannot/.nuget/packages/automapper/12.0.0/automapper.12.0.0.nupkg.sha512",
     "/home/juliannot/.nuget/packages/automapper.extensions.microsoft.dependencyinjection/12.0.0/automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",

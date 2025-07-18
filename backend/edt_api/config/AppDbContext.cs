@@ -26,18 +26,6 @@ public class AppDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        // modelBuilder.Entity<Edt>()
-        //     .HasKey(e => e.numEd);
-        //
-        // modelBuilder.Entity<Disponibilite>()
-        //     .HasKey(d => d.numDispo);
-        //
-        // modelBuilder.Entity<Matiere>()
-        //     .HasKey(m => m.codeMat);
-        //
-        // modelBuilder.Entity<Utilisateur>()
-        //     .HasKey(u => u.idUt);
-
         modelBuilder.Entity<Utilisateur>()
             .HasDiscriminator<string>("typeUtilisateur")
             .HasValue<Responsable>("Responsable")
@@ -56,9 +44,16 @@ public class AppDbContext : DbContext
             .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Edt>()
-            .HasMany(e => e.mentions)
+            .HasOne(e => e.mention)
             .WithMany(m => m.edts)
-            .UsingEntity(j => j.ToTable("edt_mentions"));
+            .HasForeignKey(r => r.mentionId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Edt>()
+            .HasOne(e => e.niveau)
+            .WithMany(m => m.edts)
+            .HasForeignKey(r => r.niveauId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Edt>()
             .HasOne(e => e.salle)
@@ -66,23 +61,29 @@ public class AppDbContext : DbContext
             .HasForeignKey(e => e.salleId)
             .OnDelete(DeleteBehavior.Restrict);
         
+        modelBuilder.Entity<Edt>()
+            .HasOne(e => e.enseignant)
+            .WithMany(s => s.edts)
+            .HasForeignKey(e => e.enseignantId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Edt>()
+            .HasOne(e => e.matiere)
+            .WithMany(s => s.edts)
+            .HasForeignKey(e => e.matiereId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
         modelBuilder.Entity<Disponibilite>()
             .HasOne(d => d.enseignant)
             .WithMany(s => s.disponibilites)
-            .HasForeignKey(d => d.enseignantCode)
+            .HasForeignKey(d => d.enseignantId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Matiere>()
             .HasOne(m => m.enseignant)
             .WithMany(e => e.matiere)
-            .HasForeignKey(m => m.enseignantCode)
-            .OnDelete(DeleteBehavior.SetNull);
-        
-        modelBuilder.Entity<Niveau>()
-            .HasOne(n => n.mention)
-            .WithMany(m => m.niveau)
-            .HasForeignKey(m => m.mentionId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .HasForeignKey(m => m.enseignantId)
+            .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Matiere>()
             .HasOne(m => m.niveau)
@@ -92,8 +93,10 @@ public class AppDbContext : DbContext
         
         modelBuilder.Entity<Matiere>()
             .HasOne(m => m.mention)
-            .WithMany()
+            .WithMany(n => n.matiere)
             .HasForeignKey(m => m.mentionId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        
     }
 }

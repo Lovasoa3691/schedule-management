@@ -5,12 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace edt_api.controllers;
 
 [ApiController]
-[Route("api/responsable")]
+[Route("api/utilisateur")]
 public class ResponsableController: ControllerBase
 {
-    private readonly IResponsable _service;
+    private readonly IUtilisateur _service;
 
-    public ResponsableController(IResponsable service)
+    public ResponsableController(IUtilisateur service)
     {
         _service = service;
     }
@@ -25,17 +25,33 @@ public class ResponsableController: ControllerBase
         var res = await _service.getByIdAsync(id);
         return res == null ? NotFound() : Ok(res);
     }
-
-    [HttpPost]
-    public async Task<ActionResult<ResponsableDto>> Create()
+    
+    [HttpPost("add")]
+    public async Task<ActionResult<ResponsableDto>> AddResponsable()
     {
-        var dto = new RegisterResponsableDto(
+        var dto = new CreateResponsableDto(
             nom: "FENONANTENAIKO",
             prenom:"Lovasoa Julianot",
             phone:"+261345416063",
-            fonction:"Secretary",
-            email:"lovasoa@gmail.com",
-            mdp:"orion3691"
+            fonction:"Admin",
+            email:"admin@gmail.com",
+            mdp:"admin3691"
+        );
+        
+        var created = await _service.createAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<EnseignantDto>> Create()
+    {
+        var dto = new RegisterEnseignantDto(
+            nom: "ANDRIANARISOA",
+            prenom:"Lovaniaina Sarah",
+            phone:"+261347478102",
+            grade:"Doctorant en Informatique",
+            email:"lovaniainasarah@gmail.com",
+            mdp:"sarah2810"
         );
         
         var created = await _service.registerAsync(dto);

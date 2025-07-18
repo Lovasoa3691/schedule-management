@@ -19,13 +19,13 @@ public class IMNiveau: INiveau
     
     public async Task<IEnumerable<NiveauDto>> getAllAsync()
     {
-        var mention = await _db.Mentions.ToListAsync();
-        return _mapper.Map<IEnumerable<NiveauDto>>(mention);
+        var niveaus = await _db.Niveaux.ToListAsync();
+        return _mapper.Map<IEnumerable<NiveauDto>>(niveaus);
     }
 
-    public async Task<NiveauDto> getByIdAsync(int id)
+    public async Task<NiveauDto?> getByIdAsync(int id)
     {
-        var res = await _db.Mentions.FindAsync(id);
+        var res = await _db.Niveaux.FindAsync(id);
         return res == null ? null : _mapper.Map<NiveauDto>(res);
     }
 
@@ -33,8 +33,7 @@ public class IMNiveau: INiveau
     {
         var niv = new Niveau
         {
-            intitule= dto.intitule,
-            mentionId = dto.mentionId
+            intitule= dto.intitule
         };
         
         _db.Niveaux.Add(niv);

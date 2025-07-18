@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/juliannot/RiderProject/edt_api/edt_api/edt_api.csproj": {}
+    "/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/edt_api.csproj": {}
   },
   "projects": {
-    "/home/juliannot/RiderProject/edt_api/edt_api/edt_api.csproj": {
+    "/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/edt_api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/juliannot/RiderProject/edt_api/edt_api/edt_api.csproj",
+        "projectUniqueName": "/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/edt_api.csproj",
         "projectName": "edt_api",
-        "projectPath": "/home/juliannot/RiderProject/edt_api/edt_api/edt_api.csproj",
+        "projectPath": "/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/edt_api.csproj",
         "packagesPath": "/home/juliannot/.nuget/packages/",
-        "outputPath": "/home/juliannot/RiderProject/edt_api/edt_api/obj/",
+        "outputPath": "/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "/home/juliannot/.nuget/NuGet/NuGet.Config"

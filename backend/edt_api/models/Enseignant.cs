@@ -9,5 +9,6 @@ public class Enseignant: Utilisateur
     
     public ICollection<Disponibilite>  disponibilites { get; set; } = new List<Disponibilite>();
     public ICollection<Matiere>  matiere { get; set; } = new List<Matiere>();
+    public ICollection<Edt> edts { get; set; } = new List<Edt>();
     
 }

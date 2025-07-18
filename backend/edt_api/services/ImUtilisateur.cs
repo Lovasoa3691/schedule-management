@@ -7,12 +7,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace edt_api.services;
 
-public class IMResponsable : IResponsable
+public class ImUtilisateur : IUtilisateur
 {
     private readonly AppDbContext _db;
     private readonly IMapper _mapper;
     
-    public IMResponsable(AppDbContext db, IMapper mapper)
+    public ImUtilisateur(AppDbContext db, IMapper mapper)
     {
         _db = db;
         _mapper = mapper;
@@ -20,7 +20,7 @@ public class IMResponsable : IResponsable
     
     public async Task<IEnumerable<ResponsableDto>> getAllAsync()
     {
-        var responsable = await _db.Responsables.ToListAsync();
+        var responsable = await _db.Responsables.Include(r => r.Authentifications).ToListAsync();
         return _mapper.Map<IEnumerable<ResponsableDto>>(responsable);
     }
 
@@ -34,22 +34,6 @@ public class IMResponsable : IResponsable
     {
         // var entity = _mapper.Map<Responsable>(dto);
 
-        var res = new Responsable
-        {
-            nom = dto.nom,
-            prenom = dto.prenom,
-            telephone = dto.phone,
-            fonction = dto.fonction,
-        };
-        
-        _db.Responsables.Add(res);
-        await _db.SaveChangesAsync();
-        
-        return _mapper.Map<ResponsableDto>(res);
-    }
-
-    public async Task<ResponsableDto> registerAsync(RegisterResponsableDto dto)
-    {
         var res = new Responsable
         {
             nom = dto.nom,
@@ -79,7 +63,43 @@ public class IMResponsable : IResponsable
             res.nom,
             res.prenom,
             res.telephone,
-            res.fonction
+            res.fonction,
+            auth.email
+        );
+    }
+
+    public async Task<EnseignantDto> registerAsync(RegisterEnseignantDto dto)
+    {
+        var res = new Enseignant
+        {
+            nom = dto.nom,
+            prenom = dto.prenom,
+            telephone = dto.phone,
+            grade = dto.grade,
+        };
+        
+        _db.Enseignants.Add(res);
+        await _db.SaveChangesAsync();
+
+        var hasher = new PasswordHasher<Utilisateur>();
+        string hashedPass = hasher.HashPassword(res, dto.mdp);
+
+        var auth = new Authentification
+        {
+            email = dto.email,
+            mdp = hashedPass,
+            utilisateurId = res.idUt
+        };
+        
+        _db.Authentifications.Add(auth);
+        await _db.SaveChangesAsync();
+
+        return new EnseignantDto(
+            res.idUt,
+            res.nom,
+            res.prenom,
+            res.telephone,
+            res.grade
         );
     }
 

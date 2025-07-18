@@ -10,8 +10,6 @@ public class Niveau
     public int idNiv { get; set; }
     public string intitule { get; set; } = string.Empty;
     
-    public int mentionId { get; set; }
-    public Mention mention{get; set;} =  null;
-    
     public ICollection<Matiere> matiere { get; set; } = new List<Matiere>();
+    public ICollection<Edt> edts { get; set; } = new List<Edt>();
 }

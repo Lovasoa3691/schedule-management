@@ -9,6 +9,6 @@ public class Disponibilite
     public TimeOnly hDeb{get; set;}
     public TimeOnly hFin{get; set;}
     
-    public string enseignantCode {get; set;}
+    public string enseignantId {get; set;}
     public Enseignant enseignant{get; set;}
 }

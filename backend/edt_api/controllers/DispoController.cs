@@ -5,45 +5,48 @@ using Microsoft.AspNetCore.Mvc;
 namespace edt_api.controllers;
 
 [ApiController]
-[Route("api/matiere")]
-public class MatiereController: ControllerBase
+[Route("api/disponibilite")]
+public class DispoController: ControllerBase
 {
-    private readonly IMatiere _service;
+    private readonly IDisponibilite _service;
 
-    public MatiereController(IMatiere service)
+    public DispoController(IDisponibilite service)
     {
         _service = service;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MatiereDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<DispoDto>>> GetAll()
         => Ok(await _service.GetAllAsync());
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<MatiereDto>> GetById(string id)
+    public async Task<ActionResult<DispoDto>> GetById(string id)
     {
         var res = await _service.GetByIdAsync(id);
         return res == null ? NotFound() : Ok(res);
     }
 
     [HttpPost]
-    public async Task<ActionResult<MatiereDto>> Create()
+    public async Task<ActionResult<DispoDto>> Create()
     {
-        // ICollection<string> listMention = new List<string>{"DROIT","BTP","GM","INFO","ICJ"};
-        // foreach (var item in listMention)
-        // {
-        //     var dto = new CreateMentionDto(nomMention:  item);
-        //     await _service.addAsync(dto);
-        // }
+        var dto = new CreateDispoDto(
+            dateDispo: new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day),
+            hDeb: new TimeOnly(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+            hFin: new TimeOnly(DateTime.Now.Hour, DateTime.Now.Minute, DateTime.Now.Second),
+            codeEns: "91361154-ca8c-46d4-beac-1d75c0a415c4"
+        );
         
-        return Ok();
+        var created = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.idDispo }, created);
+
+        // return Ok();
 
         // created = await _service.addAsync(dto);
         // return CreatedAtAction(nameof(GetById), new { id = created.idMent }, created);
     }
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, UpdateMatiereDto dto)
+    public async Task<IActionResult> Update(string id, UpdateDispoDto dto)
     {
         var ok = await _service.UpdateAsync(id, dto);
         return ok ? NoContent() : NotFound();

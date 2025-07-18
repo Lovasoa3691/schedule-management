@@ -5,54 +5,54 @@ using Microsoft.AspNetCore.Mvc;
 namespace edt_api.controllers;
 
 [ApiController]
-[Route("api/mention")]
-public class MentionController: ControllerBase
+[Route("api/matiere")]
+public class MatiereController: ControllerBase
 {
-    private readonly IMention _service;
+    private readonly IMatiere _service;
 
-    public MentionController(IMention service)
+    public MatiereController(IMatiere service)
     {
         _service = service;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MentionDto>>> GetAll()
-        => Ok(await _service.getAllAsync());
+    public async Task<ActionResult<IEnumerable<MatiereDto>>> GetAll()
+        => Ok(await _service.GetAllAsync());
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<MentionDto>> GetById(int id)
+    public async Task<ActionResult<MatiereDto>> GetById(string id)
     {
-        var res = await _service.getByIdAsync(id);
+        var res = await _service.GetByIdAsync(id);
         return res == null ? NotFound() : Ok(res);
     }
 
     [HttpPost]
-    public async Task<ActionResult<MentionDto>> Create()
+    public async Task<ActionResult<MatiereDto>> Create()
     {
-        ICollection<string> listMention = new List<string>{"DROIT","BTP","GM","INFO","ICJ"};
-        foreach (var item in listMention)
-        {
-            var dto = new CreateMentionDto(nomMention:  item);
-            await _service.addAsync(dto);
-        }
-        
-        return Ok();
+        var dto = new CreateMatiereDto(
+            nomMat:"JAVA Web",
+            nbH: 20,
+            coeff: 4,
+            enseignantId: "287e07d9-113b-46a6-b06f-6928ba672421",
+            mentionId: 4,
+            nivId: 4 
+        );
 
-        // created = await _service.addAsync(dto);
-        // return CreatedAtAction(nameof(GetById), new { id = created.idMent }, created);
+       var created = await _service.AddAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
     }
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateMentionDto dto)
+    public async Task<IActionResult> Update(string id, UpdateMatiereDto dto)
     {
-        var ok = await _service.updateAsync(id, dto);
+        var ok = await _service.UpdateAsync(id, dto);
         return ok ? NoContent() : NotFound();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete(string id)
     {
-        var ok = await _service.deleteAsync(id);
+        var ok = await _service.DeleteAsync(id);
         return ok ? NoContent() : NotFound();
     }
 }

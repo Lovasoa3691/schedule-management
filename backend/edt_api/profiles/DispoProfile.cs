@@ -4,38 +4,30 @@ using edt_api.models;
 
 namespace edt_api.profiles;
 
-public class MatiereProfile:Profile
+public class DispoProfile:Profile
 {
-    public MatiereProfile()
+    public DispoProfile()
     {
-        CreateMap<Matiere, MatiereDto>()
-            .ForCtorParam("id", opt => opt.MapFrom(src => src.codeMat))
-            .ForCtorParam("nomMat", opt => opt.MapFrom(src => src.nomMat))
-            .ForCtorParam("nbH", opt => opt.MapFrom(src => src.nbHor))
-            .ForCtorParam("coeff", opt => opt.MapFrom(src => src.coefficient))
+        CreateMap<Disponibilite, DispoDto>()
+            .ForCtorParam("idDispo", opt => opt.MapFrom(src => src.numDispo))
+            .ForCtorParam("dateDispo", opt => opt.MapFrom(src => src.dateDispo))
+            .ForCtorParam("hDeb", opt => opt.MapFrom(src => src.hDeb))
+            .ForCtorParam("hFin", opt => opt.MapFrom(src => src.hFin))
             .ForCtorParam("nomEns", opt => opt.MapFrom(src => src.enseignant!.nom))
-            .ForCtorParam("prenomEns", opt => opt.MapFrom(src => src.enseignant!.prenom))
-            .ForCtorParam("mention", opt => opt.MapFrom(src => src.mention.nomMent))
-            .ForCtorParam("niveau", opt => opt.MapFrom(src => src.niveau.intitule));
-            
+            .ForCtorParam("prenomEns", opt => opt.MapFrom(src => src.enseignant!.prenom));
 
-        CreateMap<CreateMatiereDto, Matiere>()
-            .ForMember(dest => dest.nomMat, opt => opt.MapFrom(src => src.nomMat))
-            .ForMember(dest => dest.nbHor, opt => opt.MapFrom(src => src.nomMat))
-            .ForMember(dest => dest.nbHor, opt => opt.MapFrom(src => src.nbH))
-            .ForMember(dest => dest.coefficient, opt => opt.MapFrom(src => src.coeff))
-            .ForMember(dest => dest.enseignantCode, opt => opt.MapFrom(src => src.codeEns))
-            .ForMember(dest => dest.mentionId, opt => opt.MapFrom(src => src.mentionId))
-            .ForMember(dest => dest.niveauId, opt => opt.MapFrom(src => src.nivId));
 
-        CreateMap<UpdateMatiereDto, Matiere>()
-            .ForMember(dest => dest.nomMat, opt => opt.MapFrom(src => src.nomMat))
-            .ForMember(dest => dest.nbHor, opt => opt.MapFrom(src => src.nomMat))
-            .ForMember(dest => dest.nbHor, opt => opt.MapFrom(src => src.nbH))
-            .ForMember(dest => dest.coefficient, opt => opt.MapFrom(src => src.coeff))
-            .ForMember(dest => dest.enseignantCode, opt => opt.MapFrom(src => src.codeEns))
-            .ForMember(dest => dest.mentionId, opt => opt.MapFrom(src => src.mentionId))
-            .ForMember(dest => dest.niveauId, opt => opt.MapFrom(src => src.nivId));
+        CreateMap<CreateDispoDto, Disponibilite>()
+            .ForMember(dest => dest.dateDispo, opt => opt.MapFrom(src => src.dateDispo))
+            .ForMember(dest => dest.hDeb, opt => opt.MapFrom(src => src.hDeb))
+            .ForMember(dest => dest.hFin, opt => opt.MapFrom(src => src.hFin))
+            .ForMember(dest => dest.enseignantId, opt => opt.MapFrom(src => src.codeEns));
+
+        CreateMap<UpdateDispoDto, Disponibilite>()
+            .ForMember(dest => dest.dateDispo, opt => opt.MapFrom(src => src.dateDispo))
+            .ForMember(dest => dest.hDeb, opt => opt.MapFrom(src => src.hDeb))
+            .ForMember(dest => dest.hFin, opt => opt.MapFrom(src => src.hFin))
+            .ForMember(dest => dest.enseignantId, opt => opt.MapFrom(src => src.codeEns));
 
     }
 }

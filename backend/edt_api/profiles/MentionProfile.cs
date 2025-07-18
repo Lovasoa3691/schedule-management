@@ -4,27 +4,19 @@ using edt_api.models;
 
 namespace edt_api.profiles;
 
-public class ResponsableProfile:Profile
+public class MentionProfile:Profile
 {
-    public ResponsableProfile()
+    public MentionProfile()
     {
-        CreateMap<Responsable, ResponsableDto>()
-            .ForCtorParam("id", opt => opt.MapFrom(src => src.idUt))
-            .ForCtorParam("nom", opt => opt.MapFrom(src => src.nom))
-            .ForCtorParam("prenom", opt => opt.MapFrom(src => src.prenom))
-            .ForCtorParam("phone", opt => opt.MapFrom(src => src.telephone))
-            .ForCtorParam("fonction", opt => opt.MapFrom(src => src.fonction));
+        CreateMap<Mention, MentionDto>()
+            .ForCtorParam("idMent", opt => opt.MapFrom(src => src.idMent))
+            .ForCtorParam("nomMention", opt => opt.MapFrom(src => src.nomMent));
 
-        CreateMap<CreateResponsableDto, Responsable>()
-            .ForMember(dest => dest.nom, opt => opt.MapFrom(src => src.nom))
-            .ForMember(dest => dest.prenom, opt => opt.MapFrom(src => src.prenom))
-            .ForMember(dest => dest.telephone, opt => opt.MapFrom(src => src.phone))
-            .ForMember(dest => dest.fonction, opt => opt.MapFrom(src => src.fonction));
+        CreateMap<CreateMentionDto, Mention>()
+            .ForMember(dest => dest.nomMent, opt => opt.MapFrom(src => src.nomMention));
 
-        CreateMap<UpdateResponsableDto, Responsable>()
-            .ForMember(dest => dest.nom, opt => opt.MapFrom(src => src.nom))
-            .ForMember(dest => dest.prenom, opt => opt.MapFrom(src => src.prenom))
-            .ForMember(dest => dest.telephone, opt => opt.MapFrom(src => src.phone))
-            .ForMember(dest => dest.fonction, opt => opt.MapFrom(src => src.fonction));
+        CreateMap<UpdateMentionDto, Mention>()
+            .ForMember(dest => dest.nomMent, opt => opt.MapFrom(src => src.nomMention));
+
     }
 }

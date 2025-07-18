@@ -4,19 +4,19 @@ using edt_api.models;
 
 namespace edt_api.profiles;
 
-public class MentionProfile:Profile
+public class NiveauProfile:Profile
 {
-    public MentionProfile()
+    public NiveauProfile()
     {
-        CreateMap<Mention, MentionDto>()
-            .ForCtorParam("idMent", opt => opt.MapFrom(src => src.idMent))
-            .ForCtorParam("nomMention", opt => opt.MapFrom(src => src.nomMent));
+        CreateMap<Niveau, NiveauDto>()
+            .ForCtorParam("idNiv", opt => opt.MapFrom(src => src.idNiv))
+            .ForCtorParam("intitule", opt => opt.MapFrom(src => src.intitule));
 
-        CreateMap<CreateMentionDto, Mention>()
-            .ForMember(dest => dest.nomMent, opt => opt.MapFrom(src => src.nomMention));
+        CreateMap<CreateNiveauDto, Niveau>()
+            .ForMember(dest => dest.intitule, opt => opt.MapFrom(src => src.intitule));
 
-        CreateMap<UpdateMentionDto, Mention>()
-            .ForMember(dest => dest.nomMent, opt => opt.MapFrom(src => src.nomMention));
+        CreateMap<UpdateNiveauDto, Niveau>()
+            .ForMember(dest => dest.intitule, opt => opt.MapFrom(src => src.intitule));
 
     }
 }

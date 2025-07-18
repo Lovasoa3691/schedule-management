@@ -5,36 +5,44 @@ using Microsoft.AspNetCore.Mvc;
 namespace edt_api.controllers;
 
 [ApiController]
-[Route("api/responsable")]
-public class MentionController: ControllerBase
+[Route("api/niveau")]
+public class NiveauController: ControllerBase
 {
-    private readonly IMention _service;
+    private readonly INiveau _service;
 
-    public MentionController(IMention service)
+    public NiveauController(INiveau service)
     {
         _service = service;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MentionDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<NiveauDto>>> GetAll()
         => Ok(await _service.getAllAsync());
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<MentionDto>> GetById(int id)
+    public async Task<ActionResult<NiveauDto>> GetById(int id)
     {
         var res = await _service.getByIdAsync(id);
         return res == null ? NotFound() : Ok(res);
     }
 
     [HttpPost]
-    public async Task<ActionResult<MentionDto>> Create([FromBody]CreateMentionDto dto)
+    public async Task<ActionResult<NiveauDto>> Create()
     {
-        var created = await _service.createAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+        ICollection<string> listNiveau = new List<string>{"L1","L2","L3","M1","M2"};
+        foreach (var item in listNiveau)
+        {
+            var dto = new CreateNiveauDto(intitule:  item);
+            await _service.createAsync(dto);
+        }
+        
+        return Ok();
+        // var created = await _service.createAsync(dto);
+        // return CreatedAtAction(nameof(GetById), new { id = created.idNiv }, created);
     }
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(int id, UpdateMentionDto dto)
+    public async Task<IActionResult> Update(int id, UpdateNiveauDto dto)
     {
         var ok = await _service.updateAsync(id, dto);
         return ok ? NoContent() : NotFound();

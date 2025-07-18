@@ -1,6 +1,5 @@
 namespace edt_api.dtos;
 
-public class DispoDto
-{
-    
-}
+public record DispoDto(string idDispo, DateOnly dateDispo, TimeOnly hDeb, TimeOnly hFin, string nomEns, string prenomEns);
+public record CreateDispoDto(DateOnly dateDispo, TimeOnly hDeb, TimeOnly hFin, string codeEns);
+public record UpdateDispoDto(DateOnly dateDispo, TimeOnly hDeb, TimeOnly hFin, string codeEns);

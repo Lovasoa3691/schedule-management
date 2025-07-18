@@ -2,12 +2,11 @@ using edt_api.dtos;
 
 namespace edt_api.services;
 
-public interface IMention
+public interface IMatiere
 {
-    Task<IEnumerable<MentionDto>> getAllAsync();
-    Task<MentionDto> getByIdAsync(int id);
-    Task<MentionDto> addAsync(CreateMentionDto dto);
-    Task<bool> updateAsync(int id, UpdateMentionDto dto);
-    Task<bool> deleteAsync(int id);
-    
+    Task<IEnumerable<MatiereDto>> GetAllAsync();
+    Task<MatiereDto> GetByIdAsync(string id);
+    Task<MatiereDto> AddAsync(CreateMatiereDto dto);
+    Task<bool> UpdateAsync(string id, UpdateMatiereDto dto);
+    Task<bool> DeleteAsync(string id);
 }

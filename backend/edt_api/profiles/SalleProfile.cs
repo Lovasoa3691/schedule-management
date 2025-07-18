@@ -4,28 +4,27 @@ using edt_api.models;
 
 namespace edt_api.profiles;
 
-public class ResponsableProfile:Profile
+public class SalleProfile:Profile
 {
-    public ResponsableProfile()
+    public SalleProfile()
     {
-        CreateMap<Responsable, ResponsableDto>()
-            .ForCtorParam("id", opt => opt.MapFrom(src => src.idUt))
-            .ForCtorParam("nom", opt => opt.MapFrom(src => src.nom))
-            .ForCtorParam("prenom", opt => opt.MapFrom(src => src.prenom))
-            .ForCtorParam("phone", opt => opt.MapFrom(src => src.telephone))
-            .ForCtorParam("fonction", opt => opt.MapFrom(src => src.fonction))
-            .ForCtorParam("email", opt => opt.MapFrom(src => src.Authentifications.FirstOrDefault()!.email));
+        CreateMap<Salle, SalleDto>()
+            .ForCtorParam("idsalle", opt => opt.MapFrom(src => src.idSalle))
+            .ForCtorParam("nomsalle", opt => opt.MapFrom(src => src.nomSalle))
+            .ForCtorParam("capacite", opt => opt.MapFrom(src => src.capacite))
+            .ForCtorParam("typeSalle", opt => opt.MapFrom(src => src.typeSalle))
+            .ForCtorParam("localisation", opt => opt.MapFrom(src => src.localisation));
 
-        CreateMap<CreateResponsableDto, Responsable>()
-            .ForMember(dest => dest.nom, opt => opt.MapFrom(src => src.nom))
-            .ForMember(dest => dest.prenom, opt => opt.MapFrom(src => src.prenom))
-            .ForMember(dest => dest.telephone, opt => opt.MapFrom(src => src.phone))
-            .ForMember(dest => dest.fonction, opt => opt.MapFrom(src => src.fonction));
+        CreateMap<CreateSalleDto, Salle>()
+            .ForMember(dest => dest.nomSalle, opt => opt.MapFrom(src => src.nomsalle))
+            .ForMember(dest => dest.capacite, opt => opt.MapFrom(src => src.capacite))
+            .ForMember(dest => dest.typeSalle, opt => opt.MapFrom(src => src.typeSalle))
+            .ForMember(dest => dest.localisation, opt => opt.MapFrom(src => src.localisation));
 
-        CreateMap<UpdateResponsableDto, Responsable>()
-            .ForMember(dest => dest.nom, opt => opt.MapFrom(src => src.nom))
-            .ForMember(dest => dest.prenom, opt => opt.MapFrom(src => src.prenom))
-            .ForMember(dest => dest.telephone, opt => opt.MapFrom(src => src.phone))
-            .ForMember(dest => dest.fonction, opt => opt.MapFrom(src => src.fonction));
+        CreateMap<UpdateSalleDto, Salle>()
+            .ForMember(dest => dest.nomSalle, opt => opt.MapFrom(src => src.nomsalle))
+            .ForMember(dest => dest.capacite, opt => opt.MapFrom(src => src.capacite))
+            .ForMember(dest => dest.typeSalle, opt => opt.MapFrom(src => src.typeSalle))
+            .ForMember(dest => dest.localisation, opt => opt.MapFrom(src => src.localisation));
     }
 }

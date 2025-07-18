@@ -13,7 +13,8 @@ public class ResponsableProfile:Profile
             .ForCtorParam("nom", opt => opt.MapFrom(src => src.nom))
             .ForCtorParam("prenom", opt => opt.MapFrom(src => src.prenom))
             .ForCtorParam("phone", opt => opt.MapFrom(src => src.telephone))
-            .ForCtorParam("fonction", opt => opt.MapFrom(src => src.fonction));
+            .ForCtorParam("fonction", opt => opt.MapFrom(src => src.fonction))
+            .ForCtorParam("email", opt => opt.MapFrom(src => src.Authentifications.FirstOrDefault()!.email));
 
         CreateMap<CreateResponsableDto, Responsable>()
             .ForMember(dest => dest.nom, opt => opt.MapFrom(src => src.nom))

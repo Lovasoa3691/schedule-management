@@ -2,11 +2,11 @@ using edt_api.dtos;
 
 namespace edt_api.services;
 
-public interface ISalle
+public interface IDisponibilite
 {
-    Task<IEnumerable<SalleDto>> getAllAsync();
-    Task<SalleDto> getByIdAsync(string id);
-    Task<SalleDto> createAsync(CreateSalleDto dto);
-    Task<bool> updateAsync(int id, UpdateSalleDto dto);
-    Task<bool> deleteAsync(int id);
+    Task<IEnumerable<DispoDto>> GetAllAsync();
+    Task<DispoDto> GetByIdAsync(string id);
+    Task<DispoDto> CreateAsync(CreateDispoDto dto);
+    Task<bool> UpdateAsync(string id, UpdateDispoDto dto);
+    Task<bool> DeleteAsync(string id);
 }

@@ -2,11 +2,13 @@ using edt_api.dtos;
 
 namespace edt_api.services;
 
-public interface IMatiere
+public interface IEdt
 {
-    Task<IEnumerable<MatiereDto>> GetAllAsync();
-    Task<MatiereDto> GetByIdAsync(string id);
-    Task<MatiereDto> AddAsync(CreateMatiereDto dto);
-    Task<bool> UpdateAsync(string id, UpdateMatiereDto dto);
+    Task<IEnumerable<EdtDto>> GetAllAsync();
+    Task<EdtDto> GetByIdAsync(string id);
+    Task<EdtDto> AddAsync(CreateEdtDto dto);
+    Task<bool> UpdateAsync(string id, UpdateEdtDto dto);
     Task<bool> DeleteAsync(string id);
+
+    Task<bool> CheckConflitAsync(CreateEdtDto dto);
 }

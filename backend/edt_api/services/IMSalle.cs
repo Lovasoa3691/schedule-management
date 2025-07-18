@@ -23,7 +23,7 @@ public class IMSalle:ISalle
         return _mapper.Map<IEnumerable<SalleDto>>(salle);
     }
 
-    public async Task<SalleDto> getByIdAsync(string id)
+    public async Task<SalleDto?> getByIdAsync(int id)
     {
         var res = await _db.Salles.FindAsync(id);
         return res == null ? null : _mapper.Map<SalleDto>(res);

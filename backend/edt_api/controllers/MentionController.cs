@@ -5,52 +5,52 @@ using Microsoft.AspNetCore.Mvc;
 namespace edt_api.controllers;
 
 [ApiController]
-[Route("api/responsable")]
-public class ResponsableController: ControllerBase
+[Route("api/mention")]
+public class MentionController: ControllerBase
 {
-    private readonly IResponsable _service;
+    private readonly IMention _service;
 
-    public ResponsableController(IResponsable service)
+    public MentionController(IMention service)
     {
         _service = service;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ResponsableDto>>> GetAll()
+    public async Task<ActionResult<IEnumerable<MentionDto>>> GetAll()
         => Ok(await _service.getAllAsync());
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ResponsableDto>> GetById(string id)
+    public async Task<ActionResult<MentionDto>> GetById(int id)
     {
         var res = await _service.getByIdAsync(id);
         return res == null ? NotFound() : Ok(res);
     }
 
     [HttpPost]
-    public async Task<ActionResult<ResponsableDto>> Create()
+    public async Task<ActionResult<MentionDto>> Create()
     {
-        var dto = new RegisterResponsableDto(
-            nom: "FENONANTENAIKO",
-            prenom:"Lovasoa Julianot",
-            phone:"+261345416063",
-            fonction:"Secretary",
-            email:"lovasoa@gmail.com",
-            mdp:"orion3691"
-        );
+        ICollection<string> listMention = new List<string>{"DROIT","BTP","GM","INFO","ICJ"};
+        foreach (var item in listMention)
+        {
+            var dto = new CreateMentionDto(nomMention:  item);
+            await _service.addAsync(dto);
+        }
         
-        var created = await _service.registerAsync(dto);
-        return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+        return Ok();
+
+        // created = await _service.addAsync(dto);
+        // return CreatedAtAction(nameof(GetById), new { id = created.idMent }, created);
     }
     
     [HttpPut("{id}")]
-    public async Task<IActionResult> Update(string id, UpdateResponsableDto dto)
+    public async Task<IActionResult> Update(int id, UpdateMentionDto dto)
     {
         var ok = await _service.updateAsync(id, dto);
         return ok ? NoContent() : NotFound();
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
+    public async Task<IActionResult> Delete(int id)
     {
         var ok = await _service.deleteAsync(id);
         return ok ? NoContent() : NotFound();
