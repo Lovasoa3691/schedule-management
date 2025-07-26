@@ -1,71 +1,146 @@
 import React, { useState, useEffect } from "react";
 import { FiPlus, FiSearch } from "react-icons/fi";
-import axios from "axios"; // assure-toi que axios est installé
+import axios from "axios";
 import { MdPrint } from "react-icons/md";
-import { FaFileExcel } from "react-icons/fa";
+import { FaEdit, FaFileExcel, FaTrash, FaTrashAlt } from "react-icons/fa";
+import TeacherForm from "./forms/teacher-form";
 
 const Teacher = () => {
-  const [enseignant, setEnseignant] = useState([
-    {
-      nom: "Rajaonarivelo",
-      prenom: "Jean",
-      email: "jeanrajaonarivelo@gmail.com",
-      telephone: "+261 34 12 34 56",
-      grade: "Professeur",
-    },
-    {
-      nom: "Rasolo",
-      prenom: "Marie",
-      email: "",
-      telephone: "+261 32 12 34 56",
-      grade: "Maître de Conférences",
-    },
-    {
-      nom: "Rakotovao",
-      prenom: "Paul",
-      email: "",
-      telephone: "+261 33 12 34 56",
-      grade: "Chargé de Cours",
-    },
-    {
-      nom: "Rabe",
-      prenom: "Alice",
-      email: "",
-      telephone: "+261 31 12 34 56",
-      grade: "Assistant",
-    },
-  ]);
+  const [enseignant, setEnseignant] = useState([]);
+  const [fileterd, setFiltered] = useState([]);
+  const [formData, setFormData] = useState({
+    id: "",
+    nom: "",
+    prenom: "",
+    adresse: "",
+    phone: "",
+    genre: "",
+    grade: "",
+  });
 
-  // Exemple : récupérer les Teacher depuis l'API Flask
-  //   useEffect(() => {
-  //     axios.get("http://localhost:5000/api/enseignant")
-  //       .then((res) => setEnseignant(res.data))
-  //       .catch((err) => console.error("Erreur de chargement:", err));
-  //   }, []);
+  const loadData = () => {
+    axios
+      .get("http://localhost:5142/api/utilisateur/teacher")
+      .then((res) => {
+        setEnseignant(res.data);
+        setFiltered(res.data);
+      })
+      .catch((err) => console.error("Erreur de chargement:", err.message));
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
 
   const [showModal, setShowModal] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [searchfield, setSearchfiled] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const openModalEdit = (ens) => {
+    setFormData({
+      id: ens.id,
+      nom: ens.nom,
+      prenom: ens.prenom,
+      adresse: ens.adresse,
+      phone: ens.phone,
+      genre: ens.genre,
+      grade: ens.grade,
+    });
+    setShowModalEdit(true);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logique pour ajouter un nouvel enseignant
+    axios
+      .post("http://localhost:5142/api/utilisateur/add/teacher", formData)
+      .then((res) => {
+        loadData();
+        setFormData({
+          id: "",
+          nom: "",
+          prenom: "",
+          adresse: "",
+          phone: "",
+          genre: "",
+          grade: "",
+        });
+      })
+      .catch((err) => console.error("Erreur d'envoi:", err.message));
     setShowModal(false);
   };
 
+  const handleUpdate = (e) => {
+    e.preventDefault();
+    if (!formData.id) {
+      console.error("ID de l'enseignant manquant pour la mise à jour");
+      return;
+    }
+    axios
+      .put(
+        `http://localhost:5142/api/utilisateur/teacher/${formData.id}`,
+        formData
+      )
+      .then((res) => {
+        loadData();
+        setFormData({
+          id: "",
+          nom: "",
+          prenom: "",
+          adresse: "",
+          phone: "",
+          genre: "",
+          grade: "",
+        });
+      })
+      .catch((err) => console.error("Erreur d'envoi:", err.message));
+    setShowModalEdit(false);
+  };
+
+  const handleDelete = (id) => {
+    axios
+      .delete(`http://localhost:5142/api/utilisateur/teacher/${id}`)
+      .then(() => {
+        loadData();
+        alert("Donnee supprime");
+      })
+      .catch((err) => {
+        console.error("Erreur: ", err.message);
+      });
+  };
+
+  const filter = enseignant.filter((ens) =>
+    (
+      ens.nom +
+      " " +
+      ens.prenom +
+      " " +
+      ens.adresse +
+      " " +
+      ens.grade +
+      " " +
+      ens.phone +
+      " " +
+      ens.genre
+    )
+      .toLowerCase()
+      .includes(searchfield.toLowerCase())
+  );
+
   return (
     <div className="teacher-container h-screen">
-      {/* Titre + bouton */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-semibold text-gray-800">
           Gestion des enseignants
         </h2>
 
-        {/* <div className="flex items-center border border-gray-300 rounded-md overflow-hidden w-80"> */}
-
         <div className="w-full max-w-md">
-          <label
-            for="search"
-            className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
-          >
-            Search
+          <label className="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">
+            Recherche
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -74,8 +149,11 @@ const Teacher = () => {
             <input
               type="search"
               id="search"
-              className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Search"
+              value={searchfield}
+              onChange={(e) => setSearchfiled(e.target.value)}
+              className="w-full border border-gray-300 p-4 ps-10 text-sm text-gray-900 rounded-lg bg-gray-50 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+              // className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Recherche"
               required
             />
             <button
@@ -86,7 +164,6 @@ const Teacher = () => {
             </button>
           </div>
         </div>
-        {/* </div> */}
       </div>
 
       <div className="flex items-center space-x-4">
@@ -109,150 +186,97 @@ const Teacher = () => {
         </button>
       </div>
 
-      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md shadow-lg">
-            <h2 className="text-xl font-semibold mb-4">
-              Ajouter un nouvel élément
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium">Nom</label>
-                <input
-                  type="text"
-                  name="nom"
-                  className="w-full mt-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Prenom</label>
-                <input
-                  type="text"
-                  name="prenom"
-                  className="w-full mt-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Sexe</label>
-                <select
-                  name="sexe"
-                  // value={formData.professeur}
-                  // onChange={handleChange}
-                  // className="w-full border p-2 rounded"
-                  className="w-full mt-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  required
-                >
-                  <option value="" disabled selected>
-                    Choisir
-                  </option>
-                  <option value="Homme">Homme</option>
-                  <option value="Femme">Femme</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Adresse</label>
-                <input
-                  type="text"
-                  name="adresse"
-                  className="w-full mt-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Contact</label>
-                <input
-                  type="text"
-                  name="phone"
-                  className="w-full mt-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium">Grade</label>
-                <select
-                  name="grade"
-                  // value={formData.professeur}
-                  // onChange={handleChange}
-                  // className="w-full border p-2 rounded"
-                  className="w-full mt-1 border border-gray-300 px-3 py-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
-                  required
-                >
-                  <option value="" disabled selected>
-                    Choisir une grade
-                  </option>
-                  <option value="John Doe">Doctorant en informatique</option>
-                  <option value="Dr Brice">Professeur</option>
-                </select>
-              </div>
-
-              <div className="flex justify-end space-x-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="bg-gray-300 text-gray-800 px-4 py-2 rounded-md hover:bg-gray-400"
-                >
-                  Annuler
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
-                >
-                  Enregistrer
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+        <TeacherForm
+          data={formData}
+          handleChange={handleChange}
+          handleSubmit={handleSubmit}
+          isEdit={false}
+        />
       )}
 
-      <div className="overflow-x-auto shadow rounded-lg mt-6">
-        <table className="min-w-full bg-white text-gray-700">
-          <thead>
-            <tr className="bg-indigo-100 text-left text-sm font-semibold">
-              <th className="px-6 py-3">Nom</th>
-              <th className="px-6 py-3">Prénom</th>
-              <th className="px-6 py-3">Email</th>
-              <th className="px-6 py-3">Téléphone</th>
-              <th className="px-6 py-3">Grade</th>
-              <th className="px-6 py-3">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {enseignant.length > 0 ? (
-              enseignant.map((ens, index) => (
-                <tr key={index} className="border-t hover:bg-gray-50">
-                  <td className="px-6 py-3">{ens.nom}</td>
-                  <td className="px-6 py-3">{ens.prenom}</td>
-                  <td className="px-6 py-3">{ens.email}</td>
-                  <td className="px-6 py-3">{ens.telephone}</td>
-                  <td className="px-6 py-3">{ens.grade}</td>
-                  <td className="px-6 py-3">
-                    <button className="text-blue-600 hover:underline text-sm">
-                      Modifier
-                    </button>
-                    <button className="text-red-600 hover:underline text-sm ml-4">
-                      Supprimer
-                    </button>
-                  </td>
+      {showModalEdit && (
+        <TeacherForm
+          data={formData}
+          handleChange={handleChange}
+          handleSubmit={handleUpdate}
+          isEdit={true}
+        />
+      )}
+
+      <div className="shadow rounded-lg mt-6">
+        <div className="overflow-x-auto">
+          <div className="max-h-[800px] overflow-y-auto">
+            <table className="min-w-full bg-white text-gray-700 table-fixed">
+              <thead className="bg-indigo-100 text-left font-semibold sticky top-0 z-10">
+                <tr>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">#</th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">NOM</th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    PRENOM
+                  </th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    GENRE
+                  </th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    ADRESSE
+                  </th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    COURRIEL
+                  </th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    TELEPHONE
+                  </th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    GRADE
+                  </th>
+                  <th className="px-4 py-3 sticky top-0 bg-indigo-100">
+                    ACTIONS
+                  </th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="6" className="text-center px-6 py-4 text-gray-500">
-                  Aucun enseignant trouvé.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              </thead>
+              <tbody>
+                {filter.length > 0 ? (
+                  filter.map((ens, index) => (
+                    <tr key={index} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3">{index + 1}</td>
+                      <td className="px-4 py-3">{ens.nom}</td>
+                      <td className="px-4 py-3">{ens.prenom}</td>
+                      <td className="px-4 py-3">{ens.genre}</td>
+                      <td className="px-4 py-3">{ens.adresse}</td>
+                      <td className="px-4 py-3">{ens.enail}</td>
+                      <td className="px-4 py-3">{ens.phone}</td>
+                      <td className="px-4 py-3">{ens.grade}</td>
+                      <td className="px-4 py-3">
+                        <button
+                          className="text-blue-600 text-sm"
+                          onClick={() => openModalEdit(ens)}
+                        >
+                          <FaEdit className="inline-block w-5 h-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(ens.id)}
+                          className="text-red-600 text-sm ml-4"
+                        >
+                          <FaTrashAlt className="inline-block w-5 h-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="7"
+                      className="text-center px-6 py-4 text-gray-500"
+                    >
+                      Aucun enseignant trouvé.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   );

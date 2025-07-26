@@ -27,17 +27,8 @@ public class MatiereController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<MatiereDto>> Create()
+    public async Task<ActionResult<MatiereDto>> Create([FromBody] CreateMatiereDto dto)
     {
-        var dto = new CreateMatiereDto(
-            nomMat:"JAVA Web",
-            nbH: 20,
-            coeff: 4,
-            enseignantId: "287e07d9-113b-46a6-b06f-6928ba672421",
-            mentionId: 4,
-            nivId: 4 
-        );
-
        var created = await _service.AddAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
     }

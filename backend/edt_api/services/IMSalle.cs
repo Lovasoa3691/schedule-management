@@ -31,16 +31,10 @@ public class IMSalle:ISalle
 
     public async Task<SalleDto> createAsync(CreateSalleDto dto)
     {
-        var salle = new Salle
-        {
-            nomSalle = dto.nomsalle,
-            capacite = dto.capacite,
-            typeSalle = dto.typeSalle,
-        };
-        
-        _db.Salles.Add(salle);
+        var res = _mapper.Map<Salle>(dto);
+        await _db.Salles.AddAsync(res);
         await _db.SaveChangesAsync();
-        return _mapper.Map<SalleDto>(salle);
+        return _mapper.Map<SalleDto>(res);
     }
 
     public async Task<bool> updateAsync(int id, UpdateSalleDto dto)

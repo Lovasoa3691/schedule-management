@@ -10,6 +10,7 @@ public class Edt
     public TimeOnly hFin{get; set;}
     public string type {get; set;}
     public string disponibilite {get; set;} = string.Empty;
+    public string semaine {get; set;} = string.Empty;
     
     public string responsableId { get; set; }
     public Responsable responsable { get; set; }
@@ -28,4 +29,7 @@ public class Edt
     
     public int niveauId {get; set;}
     public Niveau niveau{get; set;}
+    
+    public int anneeId {get; set;}
+    public AnneeScolaire anneeScolaire{get; set;}
 }

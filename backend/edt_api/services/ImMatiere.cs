@@ -24,8 +24,10 @@ public class ImMatiere : IMatiere
         var mat = await _db.Matieres
             .AsNoTracking()
             .Include(e => e.enseignant)
-            .Include(m => m.mention)
-            .Include(n => n.niveau)
+            .Include(m => m.matiereMention)
+                .ThenInclude(mm => mm.mention)
+            .Include(n => n.matiereNiveau)
+                .ThenInclude(n => n.niveau)
             .ToListAsync();
         return _mapper.Map<IEnumerable<MatiereDto>>(mat);
     }
@@ -38,19 +40,31 @@ public class ImMatiere : IMatiere
 
     public async Task<MatiereDto> AddAsync(CreateMatiereDto dto)
     {
-        var mat = new Matiere
-        {
-            nomMat = dto.nomMat,
-            nbHor = dto.nbH,
-            coefficient = dto.coeff,
-            mentionId = dto.mentionId,
-            niveauId = dto.nivId,
-            enseignantId = dto.enseignantId
-        };
-        
-        _db.Matieres.Add(mat);
+        var res = _mapper.Map<Matiere>(dto);
+        await _db.Matieres.AddAsync(res);
         await _db.SaveChangesAsync();
-        return _mapper.Map<MatiereDto>(mat);
+
+        foreach (var mentionId in dto.mentionId)
+        {
+            var matMention = new MatiereMention
+            {
+                matiereId = res.codeMat,
+                mentionId = mentionId
+            };
+            _db.MatiereMentions.Add(matMention);
+        }
+        
+        foreach (var niveauId in dto.niveauId)
+        {
+            var matNiveau = new MatiereNiveau
+            {
+                matiereId = res.codeMat,
+                niveauId = niveauId
+            };
+            _db.MatiereNiveaux.Add(matNiveau);
+        }
+        await _db.SaveChangesAsync();
+        return _mapper.Map<MatiereDto>(res);
     }
 
     public async Task<bool> UpdateAsync(string id, UpdateMatiereDto dto)
@@ -59,16 +73,50 @@ public class ImMatiere : IMatiere
         if (res == null) return false;
         
         _mapper.Map(dto, res);
-        // res.nomMat = dto.nomMat;
-        // res.nbHor = dto.nbH;
-        // res.coefficient = dto.coeff;
-        // res.mentionId = dto.mentionId;
-        // res.niveauId = dto.nivId;
-        // res.enseignantCode = dto.codeEns;
         
         await _db.SaveChangesAsync();
         return true;
     }
+    
+    // public async Task<bool> UpdateAsync(string id, UpdateMatiereDto dto)
+    // {
+    //     var matiere = await _db.Matieres
+    //         .Include(m => m.matiereMention)
+    //         .Include(m => m.matiereNiveau)
+    //         .FirstOrDefaultAsync(m => m.id == id);
+    //
+    //     if (matiere == null) return false;
+    //
+    //     // Mise à jour des propriétés simples
+    //     matiere.nomMat = dto.nomMat;
+    //     matiere.nbH = dto.nbH;
+    //     matiere.coeff = dto.coeff;
+    //     matiere.EnseignantId = dto.enseignantId;
+    //
+    //     // ⚠️ Mise à jour des relations avec Mention
+    //     matiere.Mentions.Clear();
+    //     var newMentions = await _db.Mentions
+    //         .Where(m => dto.mentionsIds.Contains(m.Id))
+    //         .ToListAsync();
+    //     foreach (var mention in newMentions)
+    //     {
+    //         matiere.Mentions.Add(mention);
+    //     }
+    //
+    //     // ⚠️ Mise à jour des relations avec Niveau
+    //     matiere.Niveaux.Clear();
+    //     var newNiveaux = await _db.Niveaux
+    //         .Where(n => dto.niveauxIds.Contains(n.Id))
+    //         .ToListAsync();
+    //     foreach (var niveau in newNiveaux)
+    //     {
+    //         matiere.Niveaux.Add(niveau);
+    //     }
+    //
+    //     await _db.SaveChangesAsync();
+    //     return true;
+    // }
+
 
     public async Task<bool> DeleteAsync(string id)
     {

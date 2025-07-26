@@ -6,11 +6,11 @@ namespace edt_api.controllers;
 
 [ApiController]
 [Route("api/utilisateur")]
-public class ResponsableController: ControllerBase
+public class UtilisateurController: ControllerBase
 {
     private readonly IUtilisateur _service;
 
-    public ResponsableController(IUtilisateur service)
+    public UtilisateurController(IUtilisateur service)
     {
         _service = service;
     }
@@ -18,6 +18,10 @@ public class ResponsableController: ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ResponsableDto>>> GetAll()
         => Ok(await _service.getAllAsync());
+    
+    [HttpGet("teacher")]
+    public async Task<ActionResult<IEnumerable<EnseignantDto>>> GetAllTeacher()
+        => Ok(await _service.getAllTeacherAsync());
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ResponsableDto>> GetById(string id)
@@ -34,6 +38,8 @@ public class ResponsableController: ControllerBase
             prenom:"Lovasoa Julianot",
             phone:"+261345416063",
             fonction:"Admin",
+            genre:"Masculin",
+            adresse:"Fenomanana",
             email:"admin@gmail.com",
             mdp:"admin3691"
         );
@@ -42,19 +48,10 @@ public class ResponsableController: ControllerBase
         return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
     }
 
-    [HttpPost]
-    public async Task<ActionResult<EnseignantDto>> Create()
+    [HttpPost("add/teacher")]
+    public async Task<ActionResult<EnseignantDto>> Create([FromBody]CreateEnseignantDto dto)
     {
-        var dto = new RegisterEnseignantDto(
-            nom: "ANDRIANARISOA",
-            prenom:"Lovaniaina Sarah",
-            phone:"+261347478102",
-            grade:"Doctorant en Informatique",
-            email:"lovaniainasarah@gmail.com",
-            mdp:"sarah2810"
-        );
-        
-        var created = await _service.registerAsync(dto);
+        var created = await _service.addAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
     }
     
@@ -64,11 +61,25 @@ public class ResponsableController: ControllerBase
         var ok = await _service.updateAsync(id, dto);
         return ok ? NoContent() : NotFound();
     }
+    
+    [HttpPut("teacher/{id}")]
+    public async Task<IActionResult> UpdateTeacher( string id,[FromBody] UpdateEnseignantDto dto)
+    {
+        var ok = await _service.updateTeacherAsync(id, dto);
+        return ok ? NoContent() : NotFound();
+    }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
         var ok = await _service.deleteAsync(id);
+        return ok ? NoContent() : NotFound();
+    }
+    
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteTeacher(string id)
+    {
+        var ok = await _service.deleteTeacherAsync(id);
         return ok ? NoContent() : NotFound();
     }
 }

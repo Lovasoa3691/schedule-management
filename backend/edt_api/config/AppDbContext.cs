@@ -22,9 +22,25 @@ public class AppDbContext : DbContext
     public DbSet<Niveau> Niveaux => Set<Niveau>();
     public DbSet<Utilisateur> Utilisateurs => Set<Utilisateur>();
     public DbSet<Authentification> Authentifications => Set<Authentification>();
+    public DbSet<CalendrierAcademique>  CalendrierAcademiques => Set<CalendrierAcademique>();
+    public DbSet<Message>  Messages => Set<Message>();
+    public DbSet<AnneeScolaire>  AnneeScolaires => Set<AnneeScolaire>();
+    public DbSet<Enseignement> Enseignements => Set<Enseignement>();
+    public DbSet<MatiereMention> MatiereMentions => Set<MatiereMention>();
+    public DbSet<MatiereNiveau> MatiereNiveaux => Set<MatiereNiveau>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<Enseignement>()
+            .HasKey(e => new { e.enseignantId, e.matiereId });
+        
+        modelBuilder.Entity<MatiereMention>()
+            .HasKey(m => new { m.matiereId, m.mentionId});
+        
+        modelBuilder.Entity<MatiereNiveau>()
+            .HasKey(m => new { m.matiereId, m.niveauId});
+        
 
         modelBuilder.Entity<Utilisateur>()
             .HasDiscriminator<string>("typeUtilisateur")
@@ -37,10 +53,46 @@ public class AppDbContext : DbContext
             .HasForeignKey(a => a.utilisateurId)
             .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<Enseignement>()
+            .HasOne(e => e.enseignant)
+            .WithMany(m => m.enseignements)
+            .HasForeignKey(e => e.matiereId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Enseignement>()
+            .HasOne(e => e.matiere)
+            .WithMany(m => m.enseignements)
+            .HasForeignKey(e => e.enseignantId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<CalendrierAcademique>()
+            .HasOne(r => r.responsable)
+            .WithMany(m => m.calendrierAcademies)
+            .HasForeignKey(r => r.responsableId)
+            .OnDelete(DeleteBehavior.Cascade);
+            
+        modelBuilder.Entity<Message>()
+            .HasOne(r => r.responsable)
+            .WithMany(m => m.messages)
+            .HasForeignKey(r => r.responsableId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<Message>()
+            .HasOne(r => r.enseignant)
+            .WithMany(m => m.messages)
+            .HasForeignKey(r => r.enseignantId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
         modelBuilder.Entity<Edt>()
             .HasOne(e => e.responsable)
             .WithMany(r => r.edts)
             .HasForeignKey(e => e.responsableId)
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Edt>()
+            .HasOne(e => e.anneeScolaire)
+            .WithMany(n => n.edts)
+            .HasForeignKey(e => e.anneeId)
             .OnDelete(DeleteBehavior.Restrict);
         
         modelBuilder.Entity<Edt>()
@@ -84,19 +136,30 @@ public class AppDbContext : DbContext
             .WithMany(e => e.matiere)
             .HasForeignKey(m => m.enseignantId)
             .OnDelete(DeleteBehavior.Restrict);
-        
-        modelBuilder.Entity<Matiere>()
-            .HasOne(m => m.niveau)
-            .WithMany(n => n.matiere)
-            .HasForeignKey(m => m.niveauId)
-            .OnDelete(DeleteBehavior.Restrict);
-        
-        modelBuilder.Entity<Matiere>()
+
+        modelBuilder.Entity<MatiereMention>()
+            .HasOne(m => m.matiere)
+            .WithMany(m => m.matiereMention)
+            .HasForeignKey(m => m.matiereId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatiereMention>()
             .HasOne(m => m.mention)
-            .WithMany(n => n.matiere)
+            .WithMany(m => m.matiereMention)
             .HasForeignKey(m => m.mentionId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Cascade);
         
+        modelBuilder.Entity<MatiereNiveau>()
+            .HasOne(m => m.matiere)
+            .WithMany(m => m.matiereNiveau)
+            .HasForeignKey(m => m.matiereId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<MatiereNiveau>()
+            .HasOne(m => m.niveau)
+            .WithMany(m => m.matiereNiveau)
+            .HasForeignKey(m => m.niveauId)
+            .OnDelete(DeleteBehavior.Cascade);;
         
     }
 }

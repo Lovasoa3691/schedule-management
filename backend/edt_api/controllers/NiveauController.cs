@@ -27,18 +27,11 @@ public class NiveauController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<NiveauDto>> Create()
+    public async Task<ActionResult<NiveauDto>> Create([FromBody] CreateNiveauDto dto)
     {
-        ICollection<string> listNiveau = new List<string>{"L1","L2","L3","M1","M2"};
-        foreach (var item in listNiveau)
-        {
-            var dto = new CreateNiveauDto(intitule:  item);
-            await _service.createAsync(dto);
-        }
-        
-        return Ok();
-        // var created = await _service.createAsync(dto);
-        // return CreatedAtAction(nameof(GetById), new { id = created.idNiv }, created);
+       
+        var created = await _service.createAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.idNiv }, created);
     }
     
     [HttpPut("{id}")]

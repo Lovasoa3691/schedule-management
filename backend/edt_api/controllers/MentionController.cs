@@ -27,19 +27,10 @@ public class MentionController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<MentionDto>> Create()
+    public async Task<ActionResult<MentionDto>> Create([FromBody] CreateMentionDto dto)
     {
-        ICollection<string> listMention = new List<string>{"DROIT","BTP","GM","INFO","ICJ"};
-        foreach (var item in listMention)
-        {
-            var dto = new CreateMentionDto(nomMention:  item);
-            await _service.addAsync(dto);
-        }
-        
-        return Ok();
-
-        // created = await _service.addAsync(dto);
-        // return CreatedAtAction(nameof(GetById), new { id = created.idMent }, created);
+        var created = await _service.addAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id = created.idMent }, created);
     }
     
     [HttpPut("{id}")]

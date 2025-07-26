@@ -20,11 +20,47 @@ public class ImDisponibilite : IDisponibilite
     
     public async Task<IEnumerable<DispoDto>> GetAllAsync()
     {
-        var dispo = await _db.Disponibilites
-            .Include(e => e.enseignant)
+        var enseignants = await _db.Enseignants
+            .Include(e => e.disponibilites)
             .ToListAsync();
-        return _mapper.Map<IEnumerable<DispoDto>>(dispo);
+
+        var result = new List<DispoDto>();
+
+        foreach (var enseignant in enseignants)
+        {
+           
+            if (enseignant.disponibilites != null && enseignant.disponibilites.Any())
+            {
+                foreach (var dispo in enseignant.disponibilites)
+                {
+                    result.Add(new DispoDto(
+                        idDispo: dispo.numDispo,
+                        dateDispo: dispo.dateDispo,
+                        hDeb: dispo.hDeb,
+                        hFin: dispo.hFin,
+                        nomEns: enseignant.nom,
+                        prenomEns: enseignant.prenom,
+                        grade:enseignant.grade
+                    ));
+                }
+            }
+            else
+            {
+                result.Add(new DispoDto(
+                    idDispo: null,
+                    dateDispo: default,
+                    hDeb: default,
+                    hFin: default,
+                    nomEns: enseignant.nom,
+                    prenomEns: enseignant.prenom,
+                    grade:enseignant.grade
+                ));
+            }
+        }
+
+        return result;
     }
+
 
     public async Task<DispoDto?> GetByIdAsync(string id)
     {

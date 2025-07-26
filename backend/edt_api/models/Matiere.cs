@@ -9,17 +9,12 @@ public class Matiere
     public string nomMat { get; set; } = string.Empty;
     public int nbHor { get; set; }
     public int coefficient{ get; set; }
+    public string enseignantId {get; set;}
+    public Enseignant enseignant{get; set;}
     
-    public string status { get; set; }
-    
-    public string? enseignantId {get; set;}
-    public Enseignant? enseignant{get; set;}
-    
-    public int niveauId { get; set; }
-    public Niveau niveau{get; set;} 
-    
-    public int mentionId { get; set; }
-    public Mention mention { get; set; }
     
     public ICollection<Edt> edts { get; set; } = new List<Edt>();
+    public ICollection<Enseignement> enseignements { get; set; } = new List<Enseignement>();
+    public ICollection<MatiereMention> matiereMention { get; set; } = new List<MatiereMention>();
+    public ICollection<MatiereNiveau>  matiereNiveau { get; set; } = new List<MatiereNiveau>();
 }

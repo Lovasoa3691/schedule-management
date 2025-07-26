@@ -8,6 +8,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
 );
@@ -32,7 +42,7 @@ var app = builder.Build();
 //     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 //     db.Database.Migrate();
 // }
-
+app.UseCors("AllowAll");
 app.UseAuthentication();
 app.MapControllers();
 app.Run();

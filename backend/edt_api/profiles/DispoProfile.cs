@@ -13,8 +13,9 @@ public class DispoProfile:Profile
             .ForCtorParam("dateDispo", opt => opt.MapFrom(src => src.dateDispo))
             .ForCtorParam("hDeb", opt => opt.MapFrom(src => src.hDeb))
             .ForCtorParam("hFin", opt => opt.MapFrom(src => src.hFin))
-            .ForCtorParam("nomEns", opt => opt.MapFrom(src => src.enseignant!.nom))
-            .ForCtorParam("prenomEns", opt => opt.MapFrom(src => src.enseignant!.prenom));
+            .ForCtorParam("nomEns", opt => opt.MapFrom(src => src.enseignant.nom))
+            .ForCtorParam("prenomEns", opt => opt.MapFrom(src => src.enseignant.prenom))
+            .ForCtorParam("grade", opt => opt.MapFrom(src => src.enseignant.grade));
 
 
         CreateMap<CreateDispoDto, Disponibilite>()

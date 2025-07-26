@@ -22,6 +22,25 @@ namespace edt_api.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("edt_api.models.AnneeScolaire", b =>
+                {
+                    b.Property<int>("idAnnee")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("idAnnee"));
+
+                    b.Property<DateOnly>("dateDebutAnnee")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("dateFinAnnee")
+                        .HasColumnType("date");
+
+                    b.HasKey("idAnnee");
+
+                    b.ToTable("AnneeScolaires");
+                });
+
             modelBuilder.Entity("edt_api.models.Authentification", b =>
                 {
                     b.Property<string>("idAuth")
@@ -44,6 +63,39 @@ namespace edt_api.Migrations
                     b.HasIndex("utilisateurId");
 
                     b.ToTable("Authentifications");
+                });
+
+            modelBuilder.Entity("edt_api.models.CalendrierAcademique", b =>
+                {
+                    b.Property<int>("idCal")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("idCal"));
+
+                    b.Property<DateOnly>("dateDebut")
+                        .HasColumnType("date");
+
+                    b.Property<DateOnly>("dateFin")
+                        .HasColumnType("date");
+
+                    b.Property<string>("descriptionCal")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("responsableId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("typeCal")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("idCal");
+
+                    b.HasIndex("responsableId");
+
+                    b.ToTable("CalendrierAcademiques");
                 });
 
             modelBuilder.Entity("edt_api.models.Disponibilite", b =>
@@ -75,6 +127,9 @@ namespace edt_api.Migrations
                 {
                     b.Property<string>("numEd")
                         .HasColumnType("varchar(255)");
+
+                    b.Property<int>("anneeId")
+                        .HasColumnType("int");
 
                     b.Property<string>("disponibilite")
                         .IsRequired()
@@ -110,11 +165,17 @@ namespace edt_api.Migrations
                     b.Property<int>("salleId")
                         .HasColumnType("int");
 
+                    b.Property<string>("semaine")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<string>("type")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("numEd");
+
+                    b.HasIndex("anneeId");
 
                     b.HasIndex("enseignantId");
 
@@ -131,6 +192,28 @@ namespace edt_api.Migrations
                     b.ToTable("Edts");
                 });
 
+            modelBuilder.Entity("edt_api.models.Enseignement", b =>
+                {
+                    b.Property<string>("enseignantId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("matiereId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<double>("heureEffectue")
+                        .HasColumnType("double");
+
+                    b.Property<string>("ststusEnseignement")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("enseignantId", "matiereId");
+
+                    b.HasIndex("matiereId");
+
+                    b.ToTable("Enseignements");
+                });
+
             modelBuilder.Entity("edt_api.models.Matiere", b =>
                 {
                     b.Property<string>("codeMat")
@@ -142,13 +225,7 @@ namespace edt_api.Migrations
                     b.Property<string>("enseignantId")
                         .HasColumnType("varchar(255)");
 
-                    b.Property<int>("mentionId")
-                        .HasColumnType("int");
-
                     b.Property<int>("nbHor")
-                        .HasColumnType("int");
-
-                    b.Property<int>("niveauId")
                         .HasColumnType("int");
 
                     b.Property<string>("nomMat")
@@ -163,11 +240,37 @@ namespace edt_api.Migrations
 
                     b.HasIndex("enseignantId");
 
+                    b.ToTable("Matieres");
+                });
+
+            modelBuilder.Entity("edt_api.models.MatiereMention", b =>
+                {
+                    b.Property<string>("matiereId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("mentionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("matiereId", "mentionId");
+
                     b.HasIndex("mentionId");
+
+                    b.ToTable("MatiereMentions");
+                });
+
+            modelBuilder.Entity("edt_api.models.MatiereNiveau", b =>
+                {
+                    b.Property<string>("matiereId")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<int>("niveauId")
+                        .HasColumnType("int");
+
+                    b.HasKey("matiereId", "niveauId");
 
                     b.HasIndex("niveauId");
 
-                    b.ToTable("Matieres");
+                    b.ToTable("MatiereNiveaux");
                 });
 
             modelBuilder.Entity("edt_api.models.Mention", b =>
@@ -185,6 +288,39 @@ namespace edt_api.Migrations
                     b.HasKey("idMent");
 
                     b.ToTable("Mentions");
+                });
+
+            modelBuilder.Entity("edt_api.models.Message", b =>
+                {
+                    b.Property<string>("idMes")
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("dateMes")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("enseignantId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("responsableId")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("statusMes")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("texte")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("idMes");
+
+                    b.HasIndex("enseignantId");
+
+                    b.HasIndex("responsableId");
+
+                    b.ToTable("Messages");
                 });
 
             modelBuilder.Entity("edt_api.models.Niveau", b =>
@@ -236,6 +372,14 @@ namespace edt_api.Migrations
                 {
                     b.Property<string>("idUt")
                         .HasColumnType("varchar(255)");
+
+                    b.Property<string>("adresse")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("genre")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<string>("nom")
                         .IsRequired()
@@ -296,6 +440,17 @@ namespace edt_api.Migrations
                     b.Navigation("utilisateur");
                 });
 
+            modelBuilder.Entity("edt_api.models.CalendrierAcademique", b =>
+                {
+                    b.HasOne("edt_api.models.Responsable", "responsable")
+                        .WithMany("calendrierAcademies")
+                        .HasForeignKey("responsableId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("responsable");
+                });
+
             modelBuilder.Entity("edt_api.models.Disponibilite", b =>
                 {
                     b.HasOne("edt_api.models.Enseignant", "enseignant")
@@ -309,6 +464,12 @@ namespace edt_api.Migrations
 
             modelBuilder.Entity("edt_api.models.Edt", b =>
                 {
+                    b.HasOne("edt_api.models.AnneeScolaire", "anneeScolaire")
+                        .WithMany("edts")
+                        .HasForeignKey("anneeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("edt_api.models.Enseignant", "enseignant")
                         .WithMany("edts")
                         .HasForeignKey("enseignantId")
@@ -345,6 +506,8 @@ namespace edt_api.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.Navigation("anneeScolaire");
+
                     b.Navigation("enseignant");
 
                     b.Navigation("matiere");
@@ -358,6 +521,25 @@ namespace edt_api.Migrations
                     b.Navigation("salle");
                 });
 
+            modelBuilder.Entity("edt_api.models.Enseignement", b =>
+                {
+                    b.HasOne("edt_api.models.Matiere", "matiere")
+                        .WithMany("enseignements")
+                        .HasForeignKey("enseignantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("edt_api.models.Enseignant", "enseignant")
+                        .WithMany("enseignements")
+                        .HasForeignKey("matiereId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("enseignant");
+
+                    b.Navigation("matiere");
+                });
+
             modelBuilder.Entity("edt_api.models.Matiere", b =>
                 {
                     b.HasOne("edt_api.models.Enseignant", "enseignant")
@@ -365,42 +547,94 @@ namespace edt_api.Migrations
                         .HasForeignKey("enseignantId")
                         .OnDelete(DeleteBehavior.Restrict);
 
+                    b.Navigation("enseignant");
+                });
+
+            modelBuilder.Entity("edt_api.models.MatiereMention", b =>
+                {
+                    b.HasOne("edt_api.models.Matiere", "matiere")
+                        .WithMany("matiereMention")
+                        .HasForeignKey("matiereId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("edt_api.models.Mention", "mention")
-                        .WithMany("matiere")
+                        .WithMany("matiereMention")
                         .HasForeignKey("mentionId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("matiere");
+
+                    b.Navigation("mention");
+                });
+
+            modelBuilder.Entity("edt_api.models.MatiereNiveau", b =>
+                {
+                    b.HasOne("edt_api.models.Matiere", "matiere")
+                        .WithMany("matiereNiveau")
+                        .HasForeignKey("matiereId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("edt_api.models.Niveau", "niveau")
-                        .WithMany("matiere")
+                        .WithMany("matiereNiveau")
                         .HasForeignKey("niveauId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("matiere");
+
+                    b.Navigation("niveau");
+                });
+
+            modelBuilder.Entity("edt_api.models.Message", b =>
+                {
+                    b.HasOne("edt_api.models.Enseignant", "enseignant")
+                        .WithMany("messages")
+                        .HasForeignKey("enseignantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("edt_api.models.Responsable", "responsable")
+                        .WithMany("messages")
+                        .HasForeignKey("responsableId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("enseignant");
 
-                    b.Navigation("mention");
+                    b.Navigation("responsable");
+                });
 
-                    b.Navigation("niveau");
+            modelBuilder.Entity("edt_api.models.AnneeScolaire", b =>
+                {
+                    b.Navigation("edts");
                 });
 
             modelBuilder.Entity("edt_api.models.Matiere", b =>
                 {
                     b.Navigation("edts");
+
+                    b.Navigation("enseignements");
+
+                    b.Navigation("matiereMention");
+
+                    b.Navigation("matiereNiveau");
                 });
 
             modelBuilder.Entity("edt_api.models.Mention", b =>
                 {
                     b.Navigation("edts");
 
-                    b.Navigation("matiere");
+                    b.Navigation("matiereMention");
                 });
 
             modelBuilder.Entity("edt_api.models.Niveau", b =>
                 {
                     b.Navigation("edts");
 
-                    b.Navigation("matiere");
+                    b.Navigation("matiereNiveau");
                 });
 
             modelBuilder.Entity("edt_api.models.Salle", b =>
@@ -419,12 +653,20 @@ namespace edt_api.Migrations
 
                     b.Navigation("edts");
 
+                    b.Navigation("enseignements");
+
                     b.Navigation("matiere");
+
+                    b.Navigation("messages");
                 });
 
             modelBuilder.Entity("edt_api.models.Responsable", b =>
                 {
+                    b.Navigation("calendrierAcademies");
+
                     b.Navigation("edts");
+
+                    b.Navigation("messages");
                 });
 #pragma warning restore 612, 618
         }

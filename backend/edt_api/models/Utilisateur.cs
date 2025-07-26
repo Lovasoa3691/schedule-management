@@ -10,5 +10,8 @@ public abstract class Utilisateur
     public string prenom{get;set;} = string.Empty;
     public string telephone{get;set;} = string.Empty;
     
+    public string genre{get;set;} = string.Empty;
+    public string adresse{get;set;} = string.Empty;
+    
     public ICollection<Authentification> Authentifications{get;set;} = new List<Authentification>();
 }

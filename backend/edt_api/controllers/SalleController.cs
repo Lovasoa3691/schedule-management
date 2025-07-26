@@ -28,15 +28,15 @@ public class SalleController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<SalleDto>> Create()
+    public async Task<ActionResult<SalleDto>> Create([FromBody] CreateSalleDto dto)
     {
-        var dto = new CreateSalleDto
-        (
-            nomsalle : "1A",
-            capacite : 20,
-            typeSalle : "Salle de classe",
-            localisation : "1er etage"
-        );
+        // var dto = new CreateSalleDto
+        // (
+        //     nomsalle : "1A",
+        //     capacite : 20,
+        //     typeSalle : "Salle de classe",
+        //     localisation : "1er etage"
+        // );
 
         var created = await _service.createAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.idsalle }, created);

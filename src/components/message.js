@@ -60,8 +60,7 @@ const Messagerie = ({ currentUserId }) => {
   };
 
   return (
-    <div className="flex h-[800px] bg-slate-50">
-      {/* Liste des enseignants */}
+    <div className="flex h-screen bg-slate-50">
       <aside className="w-[500px] max-h-[900px] overflow-y-auto border-r border-gray-300 p-4">
         <h2 className="text-lg font-semibold mb-4">Tous les messages</h2>
         <input
@@ -122,7 +121,6 @@ const Messagerie = ({ currentUserId }) => {
           </div>
         </header>
 
-        {/* Boîte de messages */}
         <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-white">
           {messages.map((msg, index) => (
             <div
@@ -144,7 +142,6 @@ const Messagerie = ({ currentUserId }) => {
           ))}
         </div>
 
-        {/* Zone de saisie */}
         <footer className="p-4 border-t bg-white flex gap-2">
           <input
             type="text"
