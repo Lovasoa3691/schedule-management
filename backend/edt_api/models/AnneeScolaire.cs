@@ -8,8 +8,9 @@ public class AnneeScolaire
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int idAnnee{get;set;}
-    public DateOnly dateDebutAnnee {get;set;}
-    public DateOnly dateFinAnnee {get;set;}
+    public string dateDebutAnnee {get;set;}
+    public string dateFinAnnee {get;set;}
+    public string status {get;set;}
     
     public ICollection<Edt> edts { get; set; } = new List<Edt>();
 }

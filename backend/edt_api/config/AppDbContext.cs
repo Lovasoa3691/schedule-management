@@ -46,9 +46,9 @@ public class AppDbContext : DbContext
             .HasDiscriminator<string>("typeUtilisateur")
             .HasValue<Responsable>("Responsable")
             .HasValue<Enseignant>("Enseignant");
-        
+
         modelBuilder.Entity<Authentification>()
-            .HasOne( a => a.utilisateur)
+            .HasOne(a => a.utilisateur)
             .WithMany(u => u.Authentifications)
             .HasForeignKey(a => a.utilisateurId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -56,13 +56,13 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Enseignement>()
             .HasOne(e => e.enseignant)
             .WithMany(m => m.enseignements)
-            .HasForeignKey(e => e.matiereId)
+            .HasForeignKey(e => e.enseignantId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<Enseignement>()
             .HasOne(e => e.matiere)
             .WithMany(m => m.enseignements)
-            .HasForeignKey(e => e.enseignantId)
+            .HasForeignKey(e => e.matiereId)
             .OnDelete(DeleteBehavior.Cascade);
         
         modelBuilder.Entity<CalendrierAcademique>()

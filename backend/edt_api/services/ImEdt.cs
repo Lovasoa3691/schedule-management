@@ -28,13 +28,14 @@ public class ImEdt : IEdt
             .Include(m => m.mention)
             .Include(n => n.niveau)
             .Include(s => s.salle)
+            .Include(a => a.anneeScolaire)
             .ToListAsync();
         return _mapper.Map<IEnumerable<EdtDto>>(mat);
     }
 
     public async Task<EdtDto?> GetByIdAsync(string id)
     {
-       var res = await _db.Edts.FindAsync(id);
+        var res = await _db.Edts.FindAsync(id);
        return res ==  null ? null : _mapper.Map<EdtDto>(res);
     }
     
@@ -43,15 +44,14 @@ public class ImEdt : IEdt
         var conflit = await _db.Edts
             .Where(e => e.jour == dto.jour)
             .Where(e =>
-                // Vérifie le chevauchement de temps
                 (e.hDeb < dto.hFin && e.hFin > dto.hDeb)
                 &&
                 (
-                    // Même enseignant
+                    
                     e.enseignantId == dto.enseignantId ||
-                    // Même salle
+                   
                     e.salleId == dto.idSalle
-                    // Tu peux ajouter d'autres contraintes ici si besoin
+                    
                 )
             )
             .FirstOrDefaultAsync();
@@ -68,24 +68,27 @@ public class ImEdt : IEdt
             throw new InvalidOperationException("Chevuachement detecte: la salle ou l'enseignant est déjà occupé.");
         }
         
-        var mat = new Edt
+        var data = _mapper.Map<Edt>(dto);
+        await _db.Edts.AddAsync(data);
+        await _db.SaveChangesAsync();
+        
+        TimeOnly deb = TimeOnly.Parse(dto.hDeb.ToString());
+        TimeOnly fin = TimeOnly.Parse(dto.hFin.ToString());
+        
+        TimeSpan diff = fin.ToTimeSpan() -  deb.ToTimeSpan();
+
+        var enseignement = new Enseignement
         {
-            jour = dto.jour,
-            hDeb = dto.hDeb,
-            hFin = dto.hFin,
-            disponibilite = dto.dispo,
-            type = dto.type,
-            responsableId = dto.responsableId,
-            salleId = dto.idSalle,
-            mentionId = dto.mentionId,
-            niveauId = dto.niveauId,
+            enseignantId = dto.enseignantId,
             matiereId = dto.matiereId,
-            enseignantId = dto.enseignantId
+            heureEffectue = Double.Parse(diff.TotalHours.ToString()),
+            ststusEnseignement = "En cours"
         };
         
-        _db.Edts.Add(mat);
+        await _db.Enseignements.AddAsync(enseignement);
         await _db.SaveChangesAsync();
-        return _mapper.Map<EdtDto>(mat);
+        
+        return _mapper.Map<EdtDto>(data);
     }
 
     public async Task<bool> UpdateAsync(string id, UpdateEdtDto dto)
@@ -94,13 +97,6 @@ public class ImEdt : IEdt
         if (res == null) return false;
         
         _mapper.Map(dto, res);
-        // res.nomMat = dto.nomMat;
-        // res.nbHor = dto.nbH;
-        // res.coefficient = dto.coeff;
-        // res.mentionId = dto.mentionId;
-        // res.niveauId = dto.nivId;
-        // res.enseignantCode = dto.codeEns;
-        
         await _db.SaveChangesAsync();
         return true;
     }

@@ -34,8 +34,8 @@ public class EdtProfile:Profile
             .ForMember(dest => dest.enseignantId, opt => opt.MapFrom(src => src.enseignantId))
             .ForMember(dest => dest.mentionId, opt => opt.MapFrom(src => src.mentionId))
             .ForMember(dest => dest.niveauId, opt => opt.MapFrom(src => src.niveauId))
-            .ForMember(dest => dest.matiereId, opt => opt.MapFrom(src => src.matiereId));
-            // .ForMember(dest => dest.status, opt => opt.MapFrom(src => src.status));
+            .ForMember(dest => dest.matiereId, opt => opt.MapFrom(src => src.matiereId))
+            .ForMember(dest => dest.anneeId, opt => opt.MapFrom(src => src.anneeId));
 
             CreateMap<UpdateEdtDto, Edt>()
                 .ForMember(dest => dest.jour, opt => opt.MapFrom(src => src.jour))

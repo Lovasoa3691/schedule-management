@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   FaChalkboardTeacher,
   FaDoorOpen,
@@ -12,6 +12,9 @@ import { PieChart, Pie, Cell } from "recharts";
 import PieChartComponent from "./chart/pie";
 import PieCard from "./chart/pie";
 import Select from "react-select";
+import { jwtDecode } from "jwt-decode";
+import axios from "axios";
+import { tr } from "date-fns/locale";
 
 const genderData = [
   { name: "Masculin", value: 60 },
@@ -21,24 +24,93 @@ const genderData = [
 const COLORS = ["#4F46E5", "#EC4899"];
 
 const Dashboard = () => {
-  const mentionOptions = [
-    { value: "DROIT", label: "DROIT" },
-    { value: "GM", label: "GM" },
-    { value: "INFO", label: "INFO" },
-    { value: "BTP", label: "BTP" },
-    { value: "ICJ", label: "ICJ" },
-  ];
-
-  const niveauOptions = [
-    { value: "L1", label: "L1" },
-    { value: "L2", label: "L2" },
-    { value: "L3", label: "L3" },
-    { value: "M1", label: "M1" },
-    { value: "M2", label: "M2" },
-  ];
+  const [mentions, setMentions] = useState([]);
+  const [niveaux, setNiveaux] = useState([]);
 
   const [selectedMention, setSelectedMention] = useState(null);
   const [selectedNiveau, setSelectedNiveau] = useState(null);
+  const [userId, setUserId] = useState(null);
+
+  const [enseignants, setEnseignants] = useState([]);
+  const [Man, setMan] = useState([]);
+  const [Women, setWomen] = useState([]);
+
+  const [planning, setPlanning] = useState([]);
+  const [progressPlan, setProgressPlan] = useState([]);
+
+  const [semestriel, setSemestriel] = useState([]);
+  const [partiel, setPartiel] = useState([]);
+  const [hebdomadaire, setHebdomadaire] = useState([]);
+
+  const [infoEnseignants, setInfoEnseignants] = useState([]);
+  const [filter, setFilter] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:5142/api/mention").then((rep) => {
+      setMentions(rep.data);
+    });
+
+    axios.get("http://localhost:5142/api/niveau").then((rep) => {
+      setNiveaux(rep.data);
+    });
+
+    axios
+      .get("http://localhost:5142/api/utilisateur/profile", {
+        withCredentials: true,
+      })
+      .then((rep) => {
+        setUserId(rep.data);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    axios.get("http://localhost:5142/api/utilisateur/teacher").then((rep) => {
+      setEnseignants(rep.data);
+    });
+
+    axios.get("http://localhost:5142/api/edt").then((rep) => {
+      setPlanning(rep.data);
+    });
+
+    axios
+      .get("http://localhost:5142/api/utilisateur/teacher/info")
+      .then((res) => {
+        setInfoEnseignants(res.data);
+        setFilter(res.data);
+      })
+      .catch((err) => console.error("Erreur de chargement:", err));
+  }, []);
+
+  useEffect(() => {
+    const man = enseignants.filter((item) => item.genre === "Masculin");
+    setMan(man);
+
+    const fem = enseignants.filter((item) => item.genre === "Feminin");
+    setWomen(fem);
+
+    const plan = planning.filter((item) => item.dispo === "En cours");
+    setProgressPlan(plan);
+
+    const sem = planning.filter((item) => item.type === "Semestriel");
+    setSemestriel(sem);
+
+    const part = planning.filter((item) => item.type === "Partiel");
+    setPartiel(part);
+
+    const hebd = planning.filter((item) => item.type === "Hebdomadaire");
+    setHebdomadaire(hebd);
+  }, [enseignants, planning]);
+
+  const mentionOptions = mentions.map((ment) => ({
+    value: ment.nomMention,
+    label: ment.nomMention,
+  }));
+
+  const niveauOptions = niveaux.map((ment) => ({
+    value: ment.intitule,
+    label: ment.intitule,
+  }));
 
   const handleMentionChange = (selectedOption) => {
     setSelectedMention(selectedOption);
@@ -57,14 +129,13 @@ const Dashboard = () => {
         </span>
       </h2>
       <div className=" h-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-        {/* Carte 1 - Enseignants */}
         <div className="bg-white shadow rounded-lg p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-700">
                 Enseignants
               </h3>
-              <p className="text-3xl font-bold mt-2">42</p>
+              <p className="text-3xl font-bold mt-2">{enseignants?.length}</p>
               <p className="text-sm text-gray-500">Performance moyenne : 87%</p>
             </div>
             <FaChalkboardTeacher className="text-indigo-600 text-4xl" />
@@ -76,7 +147,6 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Carte 2 - Salles disponibles */}
         <div className="bg-white shadow rounded-lg p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div>
@@ -95,53 +165,18 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Carte 3 - Planning en cours */}
         <div className="bg-white shadow rounded-lg p-5 flex flex-col justify-between">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-700">
                 Plannings en cours
               </h3>
-              <p className="text-3xl font-bold mt-2">6</p>
+              <p className="text-3xl font-bold mt-2">
+                {progressPlan?.length ?? "N/A"}
+              </p>
               <p className="text-sm text-gray-500">Mis à jour aujourd'hui</p>
             </div>
             <FaCalendarAlt className="text-pink-500 text-4xl" />
-          </div>
-          <div className="mt-4 flex items-center justify-between">
-            <div className="text-sm text-gray-600">
-              <p>
-                Semaines actives : <strong>3</strong>
-              </p>
-              <p>
-                À venir : <strong>2</strong>
-              </p>
-            </div>
-            <div className="w-20 h-20">
-              <PieChart width={80} height={80}>
-                <Pie
-                  data={genderData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={20}
-                  outerRadius={30}
-                  dataKey="value"
-                >
-                  {genderData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-              </PieChart>
-            </div>
-          </div>
-          <div className="flex justify-between items-center text-sm mt-2">
-            <div className="flex items-center gap-1">
-              <FaVenusMars className="text-blue-500" />
-              <span className="text-gray-500">Masculin: 60%</span>
-            </div>
-            <span className="text-gray-500">Féminin: 40%</span>
           </div>
         </div>
       </div>
@@ -176,6 +211,7 @@ const Dashboard = () => {
           <table className="min-w-full bg-white text-gray-700 table-fixed">
             <thead className="bg-indigo-100 text-left font-semibold sticky top-0 ">
               <tr>
+                <th className="px-4 py-2">#</th>
                 <th className="px-4 py-2">Horaire</th>
                 <th className="px-4 py-2">Matière</th>
                 <th className="px-4 py-2">Enseignant</th>
@@ -183,12 +219,30 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b">
-                <td className="px-4 py-2">08:00 - 11:00</td>
-                <td className="px-4 py-2">Examen C#</td>
-                <td className="px-4 py-2">Dr TAREHY Brice Evrard</td>
-                <td className="px-4 py-2">A7</td>
-              </tr>
+              {progressPlan && progressPlan.length > 0 ? (
+                progressPlan.map((item, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">
+                      {item.hDeb} - {item.hFin}
+                    </td>
+                    <td className="px-4 py-2">{item.nomMatiere}</td>
+                    <td className="px-4 py-2">
+                      {item.nomEns} {item.prenomEns}
+                    </td>
+                    <td className="px-4 py-2">{item.nomSalle}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="text-center px-4 py-2 text-gray-500"
+                  >
+                    Aucune programme trouvé.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>
@@ -201,11 +255,15 @@ const Dashboard = () => {
           <div className="h-40 flex flex-col items-center justify-center text-gray-700">
             <div className="flex items-center justify-between w-full border border-gray-400 rounded-lg p-4 mb-10">
               <span>Homme</span>
-              <span>60%</span>
+              <span>
+                {(Man?.length * 100) / enseignants?.length ?? "N/A"} %
+              </span>
             </div>
             <div className=" flex items-center justify-between w-full  border border-gray-400 rounded-lg p-4">
               <span>Femme</span>
-              <span>60%</span>
+              <span>
+                {(Women?.length * 100) / enseignants?.length ?? "N/A"} %
+              </span>
             </div>
           </div>
         </div>
@@ -215,7 +273,11 @@ const Dashboard = () => {
             Répartition des planning
           </h2>
           <div className="h-auto text-gray-400">
-            <PieCard />
+            <PieCard
+              hebdomadaire={hebdomadaire}
+              semetriel={semestriel}
+              partiel={partiel}
+            />
           </div>
         </div>
 
@@ -231,111 +293,57 @@ const Dashboard = () => {
               <thead className="bg-indigo-100 text-left font-semibold sticky top-0 ">
                 <tr>
                   <th className="px-4 py-2">Nom & Prenom</th>
-                  <th className="px-4 py-2">Sexe</th>
+                  {/* <th className="px-4 py-2">Sexe</th> */}
                   <th className="px-4 py-2">Grade</th>
                   <th className="px-4 py-2">Performance</th>
                 </tr>
               </thead>
               <tbody>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[15%]"></div>
-                      <span>15%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[40%]"></div>
-                      <span>40%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[66%]"></div>
-                      <span>66%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[40%]"></div>
-                      <span>40%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[66%]"></div>
-                      <span>66%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[40%]"></div>
-                      <span>40%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[66%]"></div>
-                      <span>66%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[40%]"></div>
-                      <span>40%</span>
-                    </div>
-                  </td>
-                </tr>
-                <tr className="border-b">
-                  <td className="px-4 py-2">RANDRIAMANAJAFY Celestin </td>
-                  <td className="px-4 py-2">Homme</td>
-                  <td className="px-4 py-2">Doctorant</td>
-                  <td className="px-4 py-2">
-                    <div className="flex flex-row items-center justify-between w-full h-2 bg-gray-200 rounded">
-                      <div className="h-2 bg-green-500 rounded w-[66%]"></div>
-                      <span>66%</span>
-                    </div>
-                  </td>
-                </tr>
+                {infoEnseignants && infoEnseignants.length > 0 ? (
+                  infoEnseignants.map((ens, index) => {
+                    const totalPrevue = ens.matiereInfo.reduce(
+                      (sum, mat) => sum + mat.hPrevue,
+                      0
+                    );
+                    const totalEffectue = ens.matiereInfo.reduce(
+                      (sum, mat) => sum + mat.hEffectue,
+                      0
+                    );
+                    const performance =
+                      totalPrevue > 0
+                        ? Math.round((totalEffectue / totalPrevue) * 100)
+                        : 0;
+
+                    return (
+                      <tr key={index} className="border-b">
+                        <td className="px-4 py-2">
+                          {ens.nom} {ens.prenom}
+                        </td>
+                        <td className="px-4 py-2">{ens.grade}</td>
+                        <td className="px-4 py-2">
+                          <div className="flex flex-row items-center gap-2">
+                            <div className="w-full h-2 bg-gray-200 rounded">
+                              <div
+                                className="h-2 bg-green-500 rounded"
+                                style={{ width: `${performance}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm">{performance}%</span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td
+                      colSpan="3"
+                      className="text-center px-4 py-2 text-gray-500"
+                    >
+                      Aucun enseignant trouvé.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

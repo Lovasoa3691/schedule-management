@@ -5,6 +5,10 @@ const PlanningForm = ({
   salles,
   matieres,
   selectedDate,
+  data,
+  handleChange,
+  handleSubmit,
+  isEdit,
 }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -13,60 +17,87 @@ const PlanningForm = ({
           Ajouter un événement le {selectedDate.toLocaleDateString()}
         </h2>
 
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="text-start">
-            <label>Professeur</label>
+            <label>Type</label>
             <select
-              name="professeur"
-              // value={formData.professeur}
-              // onChange={handleChange}
-              // className="w-full border p-2 rounded"
-              className="border p-2 w-full mb-4"
+              name="type"
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+              value={data.type}
+              onChange={handleChange}
               required
             >
-              <option value="" disabled defaultValue={true}>
-                Choisir un professeur
+              <option value="" disabled>
+                Choisir
               </option>
-              {enseignants.map((enseignant) => (
-                <option key={enseignant.id} value={enseignant.id}>
-                  {enseignant.nom} {enseignant.prenom}
+              <option value="Hebdomadaire">Hebdomadaire</option>
+              <option value="Semestriel">Semestriel</option>
+            </select>
+          </div>
+
+          <div className="text-start">
+            <label>Enseignant</label>
+            <select
+              name="enseignantId"
+              value={data.enseignantId}
+              onChange={handleChange}
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+              required
+            >
+              <option value="" disabled>
+                Choisir un enseignant
+              </option>
+              {enseignants.length > 0 ? (
+                enseignants.map((enseignant) => (
+                  <option key={enseignant.id} value={enseignant.id}>
+                    {enseignant.nom} {enseignant.prenom}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Aucune enseignant disponible
                 </option>
-              ))}
+              )}
             </select>
           </div>
 
           <div className="text-start">
             <label>Matière</label>
             <select
-              name="matiere"
-              // value={formData.matiere}
-              // onChange={handleChange}
-              // className="w-full border p-2 rounded"
-              className="border p-2 w-full mb-4"
+              name="matiereId"
+              value={data.matiereId}
+              onChange={handleChange}
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               required
             >
-              <option value="" disabled defaultValue={true}>
+              <option value="" disabled>
                 Choisir une matière
               </option>
-              {matieres.map((matiere) => (
-                <option key={matiere.id} value={matiere.id}>
-                  {matiere.nomMat}
+
+              {matieres.length > 0 ? (
+                matieres.map((matiere) => (
+                  <option key={matiere.id} value={matiere.id}>
+                    {matiere.nomMat}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  Aucune matière disponible
                 </option>
-              ))}
+              )}
             </select>
           </div>
 
           <div className="text-start">
             <label>Mention</label>
             <select
-              name="matiere"
-              // value={formData.matiere}
-              // onChange={handleChange}
-              // className="w-full border p-2 rounded"
-              className="border p-2 w-full mb-4"
+              name="mentionId"
+              value={data.mentionId}
+              onChange={handleChange}
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               required
             >
-              <option value="" disabled defaultValue={true}>
+              <option value="" disabled>
                 Choisir une mention
               </option>
               {mentions.map((mention, index) => (
@@ -80,14 +111,13 @@ const PlanningForm = ({
           <div className="text-start">
             <label>Niveau</label>
             <select
-              name="salle"
-              // value={formData.salle}
-              // onChange={handleChange}
-              className="border p-2 w-full mb-4"
-              // className="w-full border p-2 rounded"
+              name="niveauId"
+              value={data.niveauId}
+              onChange={handleChange}
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               required
             >
-              <option value="" disabled defaultValue={true}>
+              <option value="" disabled>
                 Choisir une niveau
               </option>
               {niveaux.map((niveau, index) => (
@@ -101,14 +131,13 @@ const PlanningForm = ({
           <div className="text-start">
             <label>Salle</label>
             <select
-              name="salle"
-              className="border p-2 w-full mb-4"
-              // value={formData.salle}
-              // onChange={handleChange}
-              // className="w-full border p-2 rounded"
+              name="idSalle"
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
+              value={data.idSalle}
+              onChange={handleChange}
               required
             >
-              <option value="" disabled defaultValue={true}>
+              <option value="" disabled>
                 Choisir une salle
               </option>
               {salles.map((salle, index) => (
@@ -122,22 +151,26 @@ const PlanningForm = ({
           <div className="text-start">
             <label htmlFor="">Heure debut</label>
             <input
+              name="hDeb"
               type="time"
               min="6:00"
               max="18:00"
+              onChange={handleChange}
               placeholder="Heure début"
-              className="border p-2 w-full mb-4"
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
             />
           </div>
 
           <div className="text-start">
             <label htmlFor="">Heure fin</label>
             <input
+              name="hFin"
               type="time"
               min="6:00"
               max="18:00"
+              onChange={handleChange}
               placeholder="Heure fin"
-              className="border p-2 w-full mb-4"
+              className="border p-2 w-full mb-4 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
             />
           </div>
 
@@ -150,7 +183,7 @@ const PlanningForm = ({
               Annuler
             </button>
             <button
-              type="button"
+              type="submit"
               className="bg-blue-600 text-white hover:bg-blue-700 px-4 py-2 rounded"
             >
               Enregistrer

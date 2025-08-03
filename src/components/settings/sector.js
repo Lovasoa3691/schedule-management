@@ -18,6 +18,15 @@ const Sector = () => {
   const [nomMention, setnomMention] = useState("");
   const [intitule, setIntitule] = useState("");
 
+  const [annee, setAnnee] = useState([]);
+
+  const [anneeData, setAnneeData] = useState({
+    idAnnee: 0,
+    debut: "",
+    fin: "",
+    status: "Inactive",
+  });
+
   const loadData = () => {
     axios
       .get("http://localhost:5142/api/mention")
@@ -27,6 +36,11 @@ const Sector = () => {
     axios
       .get("http://localhost:5142/api/niveau")
       .then((res) => setNiveaux(res.data))
+      .catch((err) => console.error("Erreur de chargement:", err.message));
+
+    axios
+      .get("http://localhost:5142/api/annee")
+      .then((res) => setAnnee(res.data))
       .catch((err) => console.error("Erreur de chargement:", err.message));
   };
 
@@ -52,23 +66,34 @@ const Sector = () => {
     });
   };
 
+  const handleChange = (e) => {
+    const selectedYear = e.target.value;
+    setAnneeData({
+      debut: selectedYear,
+      fin: selectedYear ? String(Number(selectedYear) + 1) : "",
+      status: "Inactive",
+    });
+  };
+
   const handleToggle = (id) => {
-    const updated = annees.map((a) =>
-      a.id === id ? { ...a, active: true } : { ...a, active: false }
+    const updated = annee.map((a) =>
+      a.idAnnee === id ? { ...a, active: true } : { ...a, active: false }
     );
-    setAnnees(updated);
+    setAnnee(updated);
   };
 
   const ajouterAnnee = () => {
-    if (nouvelleAnnee.trim() === "") return;
-    const exists = annees.find((a) => a.libelle === nouvelleAnnee.trim());
-    if (exists) return alert("Cette année existe déjà.");
-
-    setAnnees([
-      ...annees,
-      { id: Date.now(), libelle: nouvelleAnnee.trim(), active: false },
-    ]);
-    setNouvelleAnnee("");
+    try {
+      axios
+        .post("http://localhost:5142/api/annee", anneeData)
+        .then((rep) => {
+          loadData();
+          alert("Année scolaire ajoutée avec succès");
+        })
+        .catch((err) => console.error("Erreur de l'envoie:", err.message));
+    } catch (error) {
+      console.error("Erreur lors de l'ajout de l'année:", error);
+    }
   };
 
   return (
@@ -122,7 +147,7 @@ const Sector = () => {
                 <tr>
                   <th className="px-4 py-2">Nom du mention</th>
 
-                  <th className="px-4 py-2 text-right">Actions</th>
+                  <th className="px-4 py-2 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-gray-200">
@@ -185,7 +210,7 @@ const Sector = () => {
                 <tr>
                   <th className="px-4 py-2">Nom du niveau</th>
 
-                  <th className="px-4 py-2 text-right">Actions</th>
+                  <th className="px-4 py-2 text-right">Action</th>
                 </tr>
               </thead>
               <tbody className="text-sm divide-y divide-gray-200">
@@ -224,13 +249,42 @@ const Sector = () => {
 
           <div className="mb-8">
             <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="ex: 2025-2026"
-                value={nouvelleAnnee}
-                onChange={(e) => setNouvelleAnnee(e.target.value)}
+              <select
+                name="debut"
+                value={anneeData.debut}
+                onChange={handleChange}
                 className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              />
+              >
+                <option value="">-- Debut --</option>
+                {Array.from({ length: 50 }, (_, i) => {
+                  const year = 2000 + i;
+                  return (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  );
+                })}
+              </select>
+
+              <div className="flex gap-3">
+                <select
+                  name="fin"
+                  value={anneeData.fin}
+                  onChange={handleChange}
+                  className="flex-1 border border-gray-300 px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                >
+                  <option value="">-- Fin --</option>
+                  {Array.from({ length: 50 }, (_, i) => {
+                    const year = 2000 + i;
+                    return (
+                      <option key={year} value={year}>
+                        {year}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+
               <button
                 onClick={ajouterAnnee}
                 className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
@@ -245,21 +299,21 @@ const Sector = () => {
           </span>
 
           <div className="space-y-4 mt-6">
-            {annees.length > 0 ? (
-              annees.map((annee) => (
+            {annee.length > 0 ? (
+              annee.map((annee) => (
                 <div
-                  key={annee.id}
+                  key={annee.idAnnee}
                   className="flex justify-between items-center border p-3 rounded-lg hover:bg-gray-50"
                 >
                   <span className="text-gray-800 font-medium">
-                    {annee.libelle}
+                    {annee.debut} - {annee.fin}
                   </span>
 
                   <label className="inline-flex items-center cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={annee.active}
-                      onChange={() => handleToggle(annee.id)}
+                      checked={annee.status}
+                      onChange={() => handleToggle(annee.idAnnee)}
                       className="sr-only peer"
                     />
                     <div className="relative w-11 h-6 bg-gray-200 rounded-full peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>

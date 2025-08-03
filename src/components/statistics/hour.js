@@ -1,33 +1,54 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "react-select";
 import SimpleBarChart from "../chart/bar";
+import axios from "axios";
 
 const TeacherHour = () => {
-  const mentionOptions = [
-    { value: "DROIT", label: "DROIT" },
-    { value: "GM", label: "GM" },
-    { value: "INFO", label: "INFO" },
-    { value: "BTP", label: "BTP" },
-    { value: "ICJ", label: "ICJ" },
-  ];
+  const [enseignants, setEnseignants] = useState([]);
+  const [infoEnseignants, setInfoEnseignants] = useState([]);
+  const [filter, setFilter] = useState([]);
 
-  const niveauOptions = [
-    { value: "L1", label: "L1" },
-    { value: "L2", label: "L2" },
-    { value: "L3", label: "L3" },
-    { value: "M1", label: "M1" },
-    { value: "M2", label: "M2" },
-  ];
+  const loadAll = () => {
+    axios
+      .get("http://localhost:5142/api/utilisateur/teacher/info")
+      .then((res) => {
+        setInfoEnseignants(res.data);
+        setFilter(res.data);
+      })
+      .catch((err) => console.error("Erreur de chargement:", err));
 
-  const [selectedMention, setSelectedMention] = useState(null);
-  const [selectedNiveau, setSelectedNiveau] = useState(null);
-
-  const handleMentionChange = (selectedOption) => {
-    setSelectedMention(selectedOption);
+    axios
+      .get("http://localhost:5142/api/utilisateur/teacher")
+      .then((res) => {
+        setEnseignants(res.data);
+      })
+      .catch((err) => console.error("Erreur de chargement:", err));
   };
 
-  const handleNiveauChange = (selectedOption) => {
-    setSelectedNiveau(selectedOption);
+  useEffect(() => {
+    loadAll();
+  }, []);
+
+  const enseignantOptions = enseignants.map((ens) => ({
+    value: ens.nom,
+    label: `${ens.nom} ${ens.prenom}`,
+  }));
+
+  const [selectedEnseignant, setSelectedEnseignant] = useState(null);
+
+  const filtrerData = (selected) => {
+    const filtered = infoEnseignants.filter(
+      (item) => item.nom === selected.value
+    );
+    // console.log("Filtrer : ", filtered);
+    setFilter(filtered);
+  };
+
+  const handleEnseignantChange = (selectedEnseignant) => {
+    setSelectedEnseignant(selectedEnseignant);
+    filtrerData(selectedEnseignant);
+
+    // console.log("Filtered data: ", filtrerData(selectedEnseignant));
   };
 
   return (
@@ -45,11 +66,11 @@ const TeacherHour = () => {
 
         <div className="search-group flex items-center justify-between gap-4">
           <Select
-            className="w-72"
-            options={mentionOptions}
+            className="w-80"
+            options={enseignantOptions}
             placeholder="Selectionner un enseignant"
-            value={selectedMention}
-            onChange={handleMentionChange}
+            value={selectedEnseignant}
+            onChange={handleEnseignantChange}
             isClearable
           />
         </div>
@@ -58,16 +79,17 @@ const TeacherHour = () => {
       <div className="w-full p-6 bg-white rounded-lg shadow-md">
         <div className="flex items-center gap-4 mb-6">
           <div className="w-14 h-14 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 text-xl font-bold">
-            JD
+            {filter[0]?.nom.charAt(0) ?? "N/A"} {filter[0]?.prenom.charAt(0)}
           </div>
-
           <div>
-            <h3 className="text-lg font-semibold text-gray-800">John Doe</h3>
-            <p className="text-sm text-gray-500">Professeur de Mathématiques</p>
-            <p className="text-sm text-gray-400">j.doe@example.com</p>
+            <h3 className="text-lg font-semibold text-gray-800">
+              {filter[0]?.nom ?? "N/A"} {filter[0]?.prenom ?? "N/A"}
+            </h3>
+            <p className="text-sm text-gray-500">{filter[0]?.grade ?? "N/A"}</p>
+            <p className="text-sm text-gray-400">{filter[0]?.email ?? "N/A"}</p>
           </div>
         </div>
-        <SimpleBarChart />
+        {filter.length > 0 && <SimpleBarChart data={filter} />}
       </div>
     </div>
   );

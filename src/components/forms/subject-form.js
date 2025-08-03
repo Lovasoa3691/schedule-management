@@ -22,7 +22,7 @@ const SubjectForm = ({
               placeholder="Nom de la matière"
               value={data.nomMat}
               onChange={handleChange}
-              className="border p-2 w-full mb-2"
+              className="border p-2 w-full mb-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               required
             />
           </div>
@@ -35,7 +35,7 @@ const SubjectForm = ({
               placeholder="Nombre d'heures"
               value={data.nbH}
               onChange={handleChange}
-              className="border p-2 w-full mb-2"
+              className="border p-2 w-full mb-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               required
             />
           </div>
@@ -48,7 +48,7 @@ const SubjectForm = ({
               placeholder="Coefficient"
               value={data.coeff}
               onChange={handleChange}
-              className="border p-2 w-full mb-2"
+              className="border p-2 w-full mb-2 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
               required
             />
           </div>
@@ -59,7 +59,7 @@ const SubjectForm = ({
               name="enseignantId"
               value={data.enseignantId}
               onChange={handleChange}
-              className="border p-2 w-full"
+              className="border p-2 w-full rounded-md focus:outline-none focus:ring focus:ring-blue-400"
             >
               <option value="" disabled>
                 Choisir un enseignant
@@ -92,7 +92,7 @@ const SubjectForm = ({
                   multiple
                   value={data.mentionId}
                   onChange={handleChange}
-                  className="border p-2 w-64 h-48"
+                  className="border p-2 w-64 h-48 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                 >
                   {mentions.length > 0 ? (
                     mentions.map((m) => (
@@ -115,7 +115,7 @@ const SubjectForm = ({
                   multiple
                   value={data.niveauId}
                   onChange={handleChange}
-                  className="border p-2 w-48 h-48"
+                  className="border p-2 w-48 h-48 rounded-md focus:outline-none focus:ring focus:ring-blue-400"
                 >
                   {niveaux.length > 0 ? (
                     niveaux.map((m) => (

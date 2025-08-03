@@ -1,12 +1,14 @@
+using System.Security.Claims;
 using edt_api.dtos;
 using edt_api.services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace edt_api.controllers;
 
 [ApiController]
 [Route("api/utilisateur")]
-public class UtilisateurController: ControllerBase
+public class UtilisateurController : ControllerBase
 {
     private readonly IUtilisateur _service;
 
@@ -18,7 +20,11 @@ public class UtilisateurController: ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ResponsableDto>>> GetAll()
         => Ok(await _service.getAllAsync());
-    
+
+    [HttpGet("teacher/info")]
+    public async Task<ActionResult<IEnumerable<ResponsableDto>>> GetInfo()
+        => Ok(await _service.getInfoTeacherAsync());
+
     [HttpGet("teacher")]
     public async Task<ActionResult<IEnumerable<EnseignantDto>>> GetAllTeacher()
         => Ok(await _service.getAllTeacherAsync());
@@ -29,23 +35,50 @@ public class UtilisateurController: ControllerBase
         var res = await _service.getByIdAsync(id);
         return res == null ? NotFound() : Ok(res);
     }
-    
-    [HttpPost("add")]
-    public async Task<ActionResult<ResponsableDto>> AddResponsable()
+
+    [Authorize]
+    [HttpGet("profile")]
+    public IActionResult GetProfile()
     {
-        var dto = new CreateResponsableDto(
-            nom: "FENONANTENAIKO",
-            prenom:"Lovasoa Julianot",
-            phone:"+261345416063",
-            fonction:"Admin",
-            genre:"Masculin",
-            adresse:"Fenomanana",
-            email:"admin@gmail.com",
-            mdp:"admin3691"
-        );
-        
+        var id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Ok(id);
+    }
+
+    [HttpPost("responsable/register")]
+    public async Task<ActionResult<ResponsableDto>> AddResponsable([FromBody] CreateResponsableDto dto)
+    {
         var created = await _service.createAsync(dto);
         return CreatedAtAction(nameof(GetById), new { id = created.id }, created);
+    }
+    
+    [HttpPost("login")]
+    public async Task<ActionResult<ResponsableDto>> Login([FromBody] LoginDto dto)
+    {
+        var user = await _service.getUserConnected(dto);
+        if (user == null) return Unauthorized("Email ou mot de passe invalide");
+        Response.Cookies.Append("jwt", user.token, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.Now.AddHours(2),
+            Path = "/"
+        });
+
+        return Ok(new { email = user.email });
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        Response.Cookies.Delete("jwt", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true, 
+            SameSite = SameSiteMode.None,
+            Path = "/"
+        });
+        return Ok(new { message = "Déconnecté avec succès" });
     }
 
     [HttpPost("add/teacher")]

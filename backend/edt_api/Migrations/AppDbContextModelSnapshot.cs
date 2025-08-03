@@ -30,11 +30,17 @@ namespace edt_api.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("idAnnee"));
 
-                    b.Property<DateOnly>("dateDebutAnnee")
-                        .HasColumnType("date");
+                    b.Property<string>("dateDebutAnnee")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
-                    b.Property<DateOnly>("dateFinAnnee")
-                        .HasColumnType("date");
+                    b.Property<string>("dateFinAnnee")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.HasKey("idAnnee");
 
@@ -223,16 +229,13 @@ namespace edt_api.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("enseignantId")
+                        .IsRequired()
                         .HasColumnType("varchar(255)");
 
                     b.Property<int>("nbHor")
                         .HasColumnType("int");
 
                     b.Property<string>("nomMat")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("status")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -523,13 +526,13 @@ namespace edt_api.Migrations
 
             modelBuilder.Entity("edt_api.models.Enseignement", b =>
                 {
-                    b.HasOne("edt_api.models.Matiere", "matiere")
+                    b.HasOne("edt_api.models.Enseignant", "enseignant")
                         .WithMany("enseignements")
                         .HasForeignKey("enseignantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("edt_api.models.Enseignant", "enseignant")
+                    b.HasOne("edt_api.models.Matiere", "matiere")
                         .WithMany("enseignements")
                         .HasForeignKey("matiereId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -545,7 +548,8 @@ namespace edt_api.Migrations
                     b.HasOne("edt_api.models.Enseignant", "enseignant")
                         .WithMany("matiere")
                         .HasForeignKey("enseignantId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("enseignant");
                 });

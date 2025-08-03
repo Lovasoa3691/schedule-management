@@ -7,15 +7,27 @@ import {
 import { useState } from "react";
 import { MdMenu } from "react-icons/md";
 import { Toast } from "./notification/toast";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const TopBar = () => {
+const TopBar = ({ setIsAuthenticated }) => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [toasts, setToasts] = useState([]);
 
   const userEmail = "admin@example.com";
 
-  const handleLogout = () => {
-    console.log("Déconnexion...");
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:5142/api/utilisateur/logout", null, {
+        withCredentials: true,
+      });
+      setIsAuthenticated(false);
+      navigate("/login");
+    } catch (err) {
+      console.error("Erreur lors de la déconnexion :", err);
+    }
   };
 
   const handleMessagesClick = () => {
@@ -60,7 +72,7 @@ const TopBar = () => {
         </div>
 
         <div className="flex items-center space-x-6 relative">
-          <div
+          {/* <div
             className="relative cursor-pointer"
             onClick={handleMessagesClick}
           >
@@ -78,10 +90,10 @@ const TopBar = () => {
             <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5">
               3
             </span>
-          </div>
+          </div> */}
 
           {/* Toast */}
-          <div className="fixed top-20 right-5 z-50 w-72">
+          {/* <div className="fixed top-20 right-5 z-50 w-72">
             {toasts.map((toast) => (
               <Toast
                 key={toast.id}
@@ -89,7 +101,7 @@ const TopBar = () => {
                 onClose={() => removeToast(toast.id)}
               />
             ))}
-          </div>
+          </div> */}
 
           <div className="relative">
             <button

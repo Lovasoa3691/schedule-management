@@ -26,10 +26,30 @@ import Week from "./components/statistics/week";
 import Profil from "./components/settings/profil";
 import Sector from "./components/settings/sector";
 import AssistantFloatingForm from "./components/forms/assistant";
+import axios from "axios";
 
 function App() {
-  const [loading, setLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:5142/api/utilisateur/profile", {
+        withCredentials: true,
+      })
+      .then((rep) => {
+        console.log(rep.data);
+        setIsAuthenticated(true);
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <div>Chargement...</div>;
 
   return (
     <div className="App">
@@ -38,10 +58,10 @@ function App() {
           <>
             <Navbar setLoading={setLoading} />
             <div className="sm:ml-64 bg-slate-50">
-              <TopBar />
+              <TopBar setIsAuthenticated={setIsAuthenticated} />
               <div className="p-20 mt-5">
                 <Routes>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/enseignant" element={<Teacher />} />
                   <Route path="/planning" element={<Planning />} />
                   <Route path="/salle" element={<ClassRoom />} />
@@ -64,7 +84,10 @@ function App() {
           </>
         ) : (
           <Routes>
-            <Route path="/login" element={<Login />} />
+            <Route
+              path="/login"
+              element={<Login setIsAuthentificated={setIsAuthenticated} />}
+            />
             <Route path="/register" element={<Register />} />
             <Route path="*" element={<Navigate to="/login" />} />
           </Routes>

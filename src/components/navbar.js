@@ -63,7 +63,7 @@ const Navbar = ({ setLoading }) => {
             <ul>
               <li>
                 <Link
-                  onClick={() => menuClick("Dashboard", "/")}
+                  onClick={() => menuClick("Dashboard", "/dashboard")}
                   // className={active === "Dashboard" ? "nav-item active" : "nav-item"} onClick={() => menuClick('Enseignant', '/app/enseignant')}
                   className={`flex items-center px-4 py-2 hover:bg-slate-100 rounded-lg font-semibold${
                     active === "Dashboard"
@@ -191,7 +191,7 @@ const Navbar = ({ setLoading }) => {
                           Heures enseignants
                         </Link>
                       </li>
-                      <li>
+                      {/* <li>
                         <Link
                           onClick={() =>
                             menuClick("Semaine", "/statistique/semaine")
@@ -204,7 +204,7 @@ const Navbar = ({ setLoading }) => {
                         >
                           Planning par semaine
                         </Link>
-                      </li>
+                      </li> */}
                     </ul>
                   )}
                 </li>
@@ -216,7 +216,7 @@ const Navbar = ({ setLoading }) => {
                 Fonctionnalités avancées
               </h4>
               <ul className="space-y-2">
-                <li>
+                {/* <li>
                   <Link
                     onClick={() => menuClick("Messagerie", "/messagerie")}
                     className={`flex items-center px-4 py-2 hover:bg-slate-100 rounded-lg font-semibold${
@@ -228,7 +228,7 @@ const Navbar = ({ setLoading }) => {
                     <MdMessage className="w-5 h-5 mr-3 text-gray-800" />
                     <span>Messages</span>
                   </Link>
-                </li>
+                </li> */}
 
                 <li>
                   <button

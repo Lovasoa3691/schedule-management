@@ -6,7 +6,9 @@ public interface IUtilisateur
 {
     Task<IEnumerable<ResponsableDto>> getAllAsync();
     Task<IEnumerable<EnseignantDto>> getAllTeacherAsync();
+    Task<IEnumerable<EnseignantInfoDto>> getInfoTeacherAsync();
     Task<ResponsableDto> getByIdAsync(string id);
+    Task<AuthDto> getUserConnected(LoginDto dto);
     Task<ResponsableDto> createAsync(CreateResponsableDto dto);
     Task<EnseignantDto> addAsync(CreateEnseignantDto dto);
     Task<EnseignantDto> registerAsync(RegisterEnseignantDto dto);

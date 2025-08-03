@@ -1,15 +1,31 @@
+import { useEffect } from "react";
 import Chart from "react-apexcharts";
 
-const SimpleBarChart = () => {
-  // const options = {
-  //   chart: {
-  //     type: "bar",
-  //   },
-  //   xaxis: {
-  //     categories: ["Java", "C#", "UML", "DevOps", "Sockets.io"],
-  //   },
-  //   colors: ["#1E40AF"],
-  // };
+const SimpleBarChart = ({ data }) => {
+  const extractMatiere = () => {
+    if (data && data.length > 0) {
+      return data[0].matiereInfo.map((mat) => mat.matiere);
+    }
+    return [];
+  };
+
+  const extractHPrevue = () => {
+    if (data && data.length > 0) {
+      return data[0].matiereInfo.map((mat) => mat.hPrevue);
+    }
+    return [];
+  };
+
+  const extractHEffectue = () => {
+    if (data && data.length > 0) {
+      return data[0].matiereInfo.map((mat) => mat.hEffectue);
+    }
+    return [];
+  };
+
+  if (!data || data.length === 0) {
+    return <p className="text-center">Chargement des donnees</p>;
+  }
 
   const options = {
     chart: {
@@ -37,7 +53,7 @@ const SimpleBarChart = () => {
     },
     colors: ["#5e60c9ff", "#5bc4c4ff"],
     xaxis: {
-      categories: ["Java", "C#", "UML", "DevOps", "Sockets.io"],
+      categories: extractMatiere(),
       labels: {
         style: {
           fontSize: "14px",
@@ -48,14 +64,11 @@ const SimpleBarChart = () => {
     legend: {
       position: "bottom",
     },
-    // yaxis: {
-    //   labels: {
-    //     style: {
-    //       fontSize: "13px",
-    //     },
-    //   },
-    // },
+
     tooltip: {
+      y: {
+        formatter: (val) => `${val} h`,
+      },
       theme: "light",
     },
     grid: {
@@ -67,11 +80,11 @@ const SimpleBarChart = () => {
   const series = [
     {
       name: "Heures prevues",
-      data: [50, 82, 16, 92, 100],
+      data: extractHPrevue(),
     },
     {
       name: "Heures effectuées",
-      data: [40, 70, 10, 80, 90],
+      data: extractHEffectue(),
     },
   ];
 

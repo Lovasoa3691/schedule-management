@@ -225,3 +225,11 @@
 /home/juliannot/Desktop/Project/schedule-management/backend/edt_api/obj/Debug/net8.0/edt_api.pdb
 /home/juliannot/Desktop/Project/schedule-management/backend/edt_api/obj/Debug/net8.0/edt_api.genruntimeconfig.cache
 /home/juliannot/Desktop/Project/schedule-management/backend/edt_api/obj/Debug/net8.0/ref/edt_api.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.IdentityModel.Abstractions.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.IdentityModel.Logging.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
+/home/juliannot/Desktop/Project/schedule-management/backend/edt_api/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll

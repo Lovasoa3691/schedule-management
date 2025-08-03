@@ -1,19 +1,55 @@
 import { FaCalendar, FaLockOpen } from "react-icons/fa";
 import { FiCalendar } from "react-icons/fi";
 import { MdPassword } from "react-icons/md";
+import { Link, useNavigate } from "react-router-dom";
+import Logo from "../../assets/calendar.png";
+import { useState } from "react";
+import axios from "axios";
 
-const Login = () => {
+const Login = ({ setIsAuthentificated }) => {
+  const [user, setUser] = useState({
+    email: "",
+    mdp: "",
+  });
+
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    axios
+      .post("http://localhost:5142/api/utilisateur/login", user, {
+        withCredentials: true,
+      })
+      .then((rep) => {
+        setIsAuthentificated(true);
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        if (err.response) {
+          console.error("Status:", err.response.status);
+          console.error("Erreur serveur:", err.response.data);
+        } else {
+          console.error("Erreur:", err.message);
+        }
+      });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser({ ...user, [name]: value });
+  };
+
   return (
     <div className="login-container h-screen flex flex-col items-center justify-center bg-slate-100">
       <div className="flex flex-col items-center justify-center">
         <div className="logo mb-4">
-          {/* <div className="w-16 h-16  bg-blue-600 text-white flex items-center justify-center rounded-full text-3xl font-bold"> */}
-
-          <div className="p-4 text-center text-white flex flex-col items-center justify-center w-full h-20 bg-blue-600 rounded-lg mb-4 text-3xl">
-            <FaCalendar className="w-48 h-48 mb-2 text-white" />
-            <span>SchedConnect</span>
+          <div className="p-4 text-center text-white flex flex-col items-center justify-center w-full h-20 mb-8 text-3xl">
+            <img src={Logo} className="w-24 h-24 mb-2 text-white" />
+            <span className="text-gray-900 font-bold">
+              Sched.<span className="text-blue-600">Connect</span>
+            </span>
           </div>
-          {/* </div> */}
         </div>
 
         <span className="text-xl font-bold mb-8">
@@ -22,18 +58,15 @@ const Login = () => {
       </div>
 
       <div className="bg-white rounded-lg p-8 w-full max-w-md rounded:bg-gray-100 shadow-md">
-        <form>
+        <form onSubmit={handleSubmit} className="mb-6">
           <div className="mb-6">
-            <label
-              for="email-address-icon"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-            >
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Email
             </label>
-            <div class="relative">
-              <div class="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+            <div className="relative">
+              <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
                 <svg
-                  class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -45,28 +78,44 @@ const Login = () => {
               </div>
               <input
                 type="text"
+                name="email"
+                value={user.email}
+                onChange={handleChange}
                 id="email-address-icon"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="name@flowbite.com"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="exemple@gmail.com"
               />
             </div>
           </div>
 
           <div className="mb-6">
-            <label
-              for="website-admin"
-              className="block mb-1 text-sm font-medium text-gray-900 dark:text-white"
-            >
+            <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Mot de passe
             </label>
-            <div className="flex">
-              <span className="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border rounded-e-0 border-gray-300 border-e-0 rounded-s-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                <FaLockOpen />
-              </span>
+            <div className="relative">
+              <div className="absolute inset-y-0 start-0 flex items-center ps-3.5 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12 1a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2h-1V6a5 5 0 0 0-5-5Zm3 8V6a3 3 0 1 0-6 0v3h6Z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </div>
               <input
-                type="password"
-                id="website-admin"
-                className="rounded-none rounded-e-lg bg-gray-50 border text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm border-gray-300 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                type="passord"
+                name="mdp"
+                value={user.mdp}
+                onChange={handleChange}
+                placeholder="********"
+                id="email-address-icon"
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
               />
             </div>
           </div>
@@ -78,10 +127,7 @@ const Login = () => {
                 type="checkbox"
                 className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
               />
-              <label
-                for="remember"
-                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-              >
+              <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
                 Se souvenir de moi
               </label>
             </span>
@@ -100,6 +146,14 @@ const Login = () => {
             Se connecter
           </button>
         </form>
+        <span className="flex items-center justify-center text-gray-700">
+          <span>
+            Vous n'avez pas encore un compte?{" "}
+            <Link to={"/register"} className="underline text-blue-500">
+              Creez-en une
+            </Link>
+          </span>
+        </span>
       </div>
     </div>
   );
