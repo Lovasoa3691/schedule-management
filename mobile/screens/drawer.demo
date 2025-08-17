@@ -1,0 +1,36 @@
+// <Drawer.Navigator
+    //   initialRouteName="Accueil"
+    //   screenOptions={({ route }): DrawerNavigationOptions => ({
+    //     headerShown: true,
+    //     drawerType: "slide",
+    //     drawerStyle: {
+    //       backgroundColor: "#fff",
+    //       width: 240,
+    //     },
+    //     headerStyle: {
+    //       backgroundColor: "#0066cc",
+    //     },
+    //     headerTintColor: "#fff",
+    //     drawerLabelStyle: {
+    //       fontSize: 16,
+    //     },
+    //     drawerIcon: ({ focused, size, color }) => {
+    //       let iconName = "home-outline";
+
+    //       if (route.name === "Accueil") iconName = "home-outline";
+    //       else if (route.name === "Mon Profile") iconName = "person-outline";
+    //       else if (route.name === "Mes cours") iconName = "book-outline";
+
+    //       return <Icon name={iconName} size={size} color={color} />;
+    //     },
+    //   })}
+    // >
+    //   <Drawer.Screen name="Accueil" component={Dashboard} />
+    //   <Drawer.Screen name="Mes cours" component={Revision} />
+    //   <Drawer.Screen name="Disponibilite" component={ScheduleCalendar} />
+    //   <Drawer.Screen name="Satatistiques" component={StatsScreen} />
+    //   <Drawer.Screen name="Rapports" component={StatsScreen} />
+    //   <Drawer.Screen name="Notifications" component={ChatScreen} />
+    //   <Drawer.Screen name="Messages" component={ChatScreen} />
+    //   <Drawer.Screen name="Mon Profile" component={Dashboard} />
+    // </Drawer.Navigator>
